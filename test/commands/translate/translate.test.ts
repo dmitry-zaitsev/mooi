@@ -26,7 +26,7 @@ function initializeDependencies(): void {
 describe('mooi translate', () => {
     test
         .do(() => initializeDependencies())
-        .command(['translate', 'test/assets/cases/defaultOutput/mooi'])
+        .command(['translate', 'test/assets/cases/defaultOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
         .it('translate file in a project of unknown format', ctx => {
             expect(storedLanguages()).to.have.members(['de', 'nl']);
 

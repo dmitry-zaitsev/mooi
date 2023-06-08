@@ -1,8 +1,9 @@
-import { HashFunction } from "../crypto";
-import { Formatter } from "../output";
-import { TranslationStoreFactory } from "../store";
+import { HashFunction, sha1HashFunction } from "../crypto";
+import { Formatter, NoopFormatter } from "../output";
+import { TranslationStoreFactory, createDiskTranslationStoreFactory } from "../store";
 import { Translator } from "../translate";
 import { TranlsatorEngine } from "../translate/engine";
+import { OpenaiTranslatorEngine } from "../translate/engine/openai";
 
 export let underTest: boolean = false;
 
@@ -15,6 +16,14 @@ export type AppModule = {
     outputFormatter: Formatter;
     translationStoreFactory: TranslationStoreFactory;
     hashFunction: HashFunction;
+}
+
+/**
+ * Params that are configurable by user.
+ */
+export type DiParams = {
+    openAiApiKey: string;
+    inputDirectory: string;
 }
 
 export class App {
@@ -30,4 +39,17 @@ export class App {
         );
     }
 
+}
+
+export const inittializeDependencies = (params: DiParams) => {
+    if (underTest) {
+        return;
+    }
+
+    App.initialize({
+        translatorEngine: new OpenaiTranslatorEngine(params.openAiApiKey),
+        hashFunction: sha1HashFunction,
+        translationStoreFactory: createDiskTranslationStoreFactory(params.inputDirectory),
+        outputFormatter: new NoopFormatter(),   // TODO pass actual formatter and make it configurable
+    });
 }
