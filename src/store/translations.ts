@@ -12,6 +12,8 @@ export interface TranslationsStore {
 
     put(key: string, value: string, hash: string): void;
 
+    get(key: string): TranslatedValueEntry | undefined;
+
     contains(key: string): boolean;
 
     entries(): TranslatedValueEntry[];
@@ -57,6 +59,10 @@ export class DiskTranslationsStore implements TranslationsStore {
         });
 
         this.saveCache();
+    }
+
+    public get(key: string): TranslatedValueEntry | undefined {
+        return this.cache.get(key);
     }
 
     public contains(key: string): boolean {

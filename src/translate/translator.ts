@@ -43,15 +43,39 @@ export class Translator {
         const store = this.storeFactory(language);
         const batchSize = this.engine.maxBatchSize();
 
-        for (let i = 0; i < entries.length; i += batchSize) {
-            const batch = entries.slice(i, i + batchSize);
+        const hashes: {[key: string]: string} = {}
+        for (const entry of entries) {
+            const hash = this.hashFunction([entry.key, entry.value, entry.description || null]);
+            hashes[entry.key] = hash;
+        }
+
+        const entriesForTranslation = entries
+            .filter(entry => {
+                const existingTranslation = store.get(entry.key);
+                if (!existingTranslation) {
+                    // Was not translated yet
+                    return true;
+                }
+
+                const hash = hashes[entry.key];
+
+                if (existingTranslation.hash !== hash) {
+                    // Was translated but the source changed
+                    return true;
+                }
+
+                return false;
+            });
+
+        for (let i = 0; i < entriesForTranslation.length; i += batchSize) {
+            const batch = entriesForTranslation.slice(i, i + batchSize);
             const translations = await this.engine.translate(batch, language);
 
             for (let j = 0; j < batch.length; j++) {
                 const entry = batch[j];
                 const translation = translations[j];
 
-                const hash = this.hashFunction([entry.key, entry.value, entry.description || null]);
+                const hash = hashes[entry.key];
                 store.put(entry.key, translation, hash);
             }
         }

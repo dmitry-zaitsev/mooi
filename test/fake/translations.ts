@@ -8,6 +8,10 @@ export class InMemoryTranslationStore implements TranslationsStore {
         this.store.set(key, {key, value, hash});
     }
 
+    public get(key: string): TranslatedValueEntry | undefined {
+        return this.store.get(key);
+    }
+
     public contains(key: string): boolean {
         return this.store.has(key);
     }
@@ -21,14 +25,14 @@ export class InMemoryTranslationStore implements TranslationsStore {
 const stores: Map<string, InMemoryTranslationStore> = new Map();
 
 export const fakeTranslationStoreFactory: TranslationStoreFactory = (lanaugeCode) => {
+    return fakeTranslationStore(lanaugeCode);
+};
+
+export const fakeTranslationStore = (lanaugeCode: string) => {
     if (!stores.has(lanaugeCode)) {
         stores.set(lanaugeCode, new InMemoryTranslationStore());
     }
 
-    return stores.get(lanaugeCode) as InMemoryTranslationStore;
-};
-
-export const fakeTranslationStore = (lanaugeCode: string) => {
     const store = stores.get(lanaugeCode);
 
     if (!store) {
@@ -39,3 +43,7 @@ export const fakeTranslationStore = (lanaugeCode: string) => {
 };
 
 export const storedLanguages = () => Array.from(stores.keys());
+
+export const clearTranslationStores = () => {
+    stores.clear();
+}
