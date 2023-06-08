@@ -2,6 +2,7 @@ import { Args, Command, Flags } from "@oclif/core";
 import * as fs from 'fs';
 import { App } from "../../di";
 import { readInputFolder } from "../../input";
+import { TranslatorContext } from "../../translate";
 
 export default class Translate extends Command {
 
@@ -27,7 +28,12 @@ export default class Translate extends Command {
 
         const inputModel = await readInputFolder(inputDirectory);
 
+        const context: TranslatorContext = {
+            rootDir: process.cwd(),
+        }
+
         App.translator.translate(
+            context,
             inputModel.languages,
             inputModel.entries,
         );

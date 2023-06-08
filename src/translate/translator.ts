@@ -1,8 +1,10 @@
 import { HashFunction } from "../crypto";
 import { ProductCopy } from "../input";
-import { Formatter, Translation } from "../output";
+import { Formatter, FormatterContext, Translation } from "../output";
 import { TranslationStoreFactory } from "../store/translations";
 import { TranlsatorEngine } from "./engine";
+
+export type TranslatorContext = {} & FormatterContext;
 
 export class Translator {
 
@@ -24,12 +26,13 @@ export class Translator {
     }
 
     public async translate(
+        context: TranslatorContext,
         languages: string[],
         entries: ProductCopy[]
     ): Promise<void> {
         for (const language of languages) {
             await this.translateLanguage(language, entries);
-            await this.applyFormat(language);
+            await this.applyFormat(context, language);
         }
     }
 
@@ -54,7 +57,7 @@ export class Translator {
         }
     }
 
-    private async applyFormat(language: string): Promise<void> {
+    private async applyFormat(context: TranslatorContext, language: string): Promise<void> {
         const store = this.storeFactory(language);
         const entries = store.entries();
 
@@ -66,7 +69,7 @@ export class Translator {
             };
         });
 
-        await this.formatter.write(translations);
+        await this.formatter.write(context, translations);
     }
 
 }

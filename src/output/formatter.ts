@@ -1,14 +1,18 @@
 import { Translation } from "./schema";
 
+export type FormatterContext = {
+    rootDir: string;
+}
+
 export interface Formatter {
 
-    write: (translations: Translation[]) => Promise<void>;
+    write: (context: FormatterContext, translations: Translation[]) => Promise<void>;
 
 }
 
 export class NoopFormatter implements Formatter {
 
-    public async write(translations: Translation[]): Promise<void> {
+    public async write(context: FormatterContext, translations: Translation[]): Promise<void> {
         // noop
     }
 
