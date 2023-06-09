@@ -26,7 +26,11 @@ entries:
       description: This value is shown as a title of the home screen    # (optional, but recommended) Let mooi know in what context this value is used to get a better quality of translation
 ```
 
-Then run `npx mooi-cli translate --openAiKey {YOUR OPEN AI API KEY}
+Then run 
+
+```
+npx mooi-cli translate --openAiKey {YOUR OPEN AI API KEY}
+```
 
 ## Format the output
 By default, results are generated in `mooi/translations` folder. If you want to provide an additional output, you can do so via `mooi/config.yaml` file using Handlebar.js syntax
