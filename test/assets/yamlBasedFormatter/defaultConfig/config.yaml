@@ -1,0 +1,9 @@
+formats:
+  - name: default
+    outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: |
+      {
+        {{#each translations}}
+          "{{this.key}}": "{{this.value}}" {{#unless @last}},{{/unless}}
+        {{/each}}
+      }

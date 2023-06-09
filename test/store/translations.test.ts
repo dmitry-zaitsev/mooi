@@ -1,30 +1,13 @@
 import * as fs from 'fs';
 import { DiskTranslationsStore } from '../../src/store';
 import { expect } from 'chai';
+import { cleanUpTestFiles, inTestFolder } from '../util/files';
 const fse = require('fs-extra');
 
 
-function inTestFolder(input: string): string {
-    const tmpDestination = `tmp/${input}`;
-    if (fs.existsSync(tmpDestination)) {
-        fs.rmdirSync(tmpDestination, { recursive: true });
-    }
-
-    fse.mkdirSync(tmpDestination, { recursive: true });
-
-    return tmpDestination;
-}
-
-function cleanUpTest(): void {
-    if (!fs.existsSync('tmp')) {
-        return;
-    }
-    fs.rmdirSync('tmp', { recursive: true });
-}
-
 describe('DiskTranslationsStore', () => {
     afterEach(() => {
-        cleanUpTest();
+        cleanUpTestFiles();
     });
 
     it('should create a cache file if it does not exist', () => {
