@@ -19,7 +19,7 @@ export const readInputFolder = async (inputPath: string): Promise<InputSchema> =
     };
 
     for (const file of files) {
-        if (!file.endsWith('.yaml') || !file.endsWith('.yml')) {
+        if (!file.endsWith('.yaml') && !file.endsWith('.yml')) {
             continue;
         }
 

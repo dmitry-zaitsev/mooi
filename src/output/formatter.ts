@@ -2,6 +2,7 @@ import { Translation } from "./schema";
 
 export type FormatterContext = {
     rootDir: string;
+    inputDir: string;
 }
 
 export interface Formatter {

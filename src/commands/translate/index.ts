@@ -35,6 +35,7 @@ export default class Translate extends Command {
 
         const context: TranslatorContext = {
             rootDir: process.cwd(),
+            inputDir: inputDirectory,
         }
 
         App.translator.translate(
