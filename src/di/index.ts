@@ -1,5 +1,5 @@
 import { HashFunction, sha1HashFunction } from "../crypto";
-import { Formatter, NoopFormatter } from "../output";
+import { Formatter, YamlBasedFormatter } from "../output";
 import { TranslationStoreFactory, createDiskTranslationStoreFactory } from "../store";
 import { Translator } from "../translate";
 import { TranlsatorEngine } from "../translate/engine";
@@ -50,6 +50,6 @@ export const inittializeDependencies = (params: DiParams) => {
         translatorEngine: new OpenaiTranslatorEngine(params.openAiApiKey),
         hashFunction: sha1HashFunction,
         translationStoreFactory: createDiskTranslationStoreFactory(params.inputDirectory),
-        outputFormatter: new NoopFormatter(),   // TODO pass actual formatter and make it configurable
+        outputFormatter: new YamlBasedFormatter(),
     });
 }
