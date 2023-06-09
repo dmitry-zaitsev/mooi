@@ -18,7 +18,7 @@ $ npm install -g mooi-cli
 $ mooi COMMAND
 running command...
 $ mooi (--version)
-mooi-cli/1.0.0 darwin-x64 node-v18.16.0
+mooi-cli/1.0.1 darwin-x64 node-v18.16.0
 $ mooi --help [COMMAND]
 USAGE
   $ mooi COMMAND
@@ -315,5 +315,5 @@ FLAGS
   -k, --openAiKey=<value>  (required) OpenAI API key
 ```
 
-_See code: [dist/commands/translate/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/translate/index.ts)_
+_See code: [dist/commands/translate/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.1/dist/commands/translate/index.ts)_
 <!-- commandsstop -->
