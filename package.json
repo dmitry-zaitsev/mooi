@@ -22,7 +22,6 @@
     "@oclif/plugin-plugins": "^2.4.7",
     "@types/js-yaml": "^4.0.5",
     "@typescript-eslint/parser": "^5.59.7",
-    "crypto": "^1.0.1",
     "dirty-json": "^0.9.2",
     "fs-extra": "^11.1.1",
     "handlebars": "^4.7.7",
@@ -55,10 +54,7 @@
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
-    ],
-    "hooks": {
-      "init": "./src/hooks/init.ts"
-    }
+    ]
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",

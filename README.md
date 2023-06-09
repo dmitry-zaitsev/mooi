@@ -14,11 +14,11 @@ oclif example Hello World CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g mooi
+$ npm install -g mooi-cli
 $ mooi COMMAND
 running command...
 $ mooi (--version)
-mooi/1.0.0 darwin-x64 node-v18.16.0
+mooi-cli/1.0.0 darwin-x64 node-v18.16.0
 $ mooi --help [COMMAND]
 USAGE
   $ mooi COMMAND
