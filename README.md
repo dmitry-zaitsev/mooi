@@ -18,7 +18,7 @@ $ npm install -g mooi
 $ mooi COMMAND
 running command...
 $ mooi (--version)
-mooi/0.0.0 darwin-x64 node-v18.16.0
+mooi/1.0.0 darwin-x64 node-v18.16.0
 $ mooi --help [COMMAND]
 USAGE
   $ mooi COMMAND
@@ -28,7 +28,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`mooi hello PERSON`](#mooi-hello-person)
-* [`mooi hello world`](#mooi-hello-world)
+* [`mooi hello:world`](#mooi-helloworld)
 * [`mooi help [COMMANDS]`](#mooi-help-commands)
 * [`mooi plugins`](#mooi-plugins)
 * [`mooi plugins:install PLUGIN...`](#mooi-pluginsinstall-plugin)
@@ -38,7 +38,7 @@ USAGE
 * [`mooi plugins:uninstall PLUGIN...`](#mooi-pluginsuninstall-plugin)
 * [`mooi plugins:uninstall PLUGIN...`](#mooi-pluginsuninstall-plugin-1)
 * [`mooi plugins:uninstall PLUGIN...`](#mooi-pluginsuninstall-plugin-2)
-* [`mooi plugins update`](#mooi-plugins-update)
+* [`mooi plugins:update`](#mooi-pluginsupdate)
 
 ## `mooi hello PERSON`
 
@@ -62,23 +62,25 @@ EXAMPLES
   hello friend from oclif! (./src/commands/hello/index.ts)
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v0.0.0/dist/commands/hello/index.ts)_
+_See code: [dist/commands/hello/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/hello/index.ts)_
 
-## `mooi hello world`
+## `mooi hello:world`
 
 Say hello world
 
 ```
 USAGE
-  $ mooi hello world
+  $ mooi hello:world
 
 DESCRIPTION
   Say hello world
 
 EXAMPLES
-  $ mooi hello world
+  $ mooi hello:world
   hello world! (./src/commands/hello/world.ts)
 ```
+
+_See code: [dist/commands/hello/world.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/hello/world.ts)_
 
 ## `mooi help [COMMANDS]`
 
@@ -148,7 +150,7 @@ DESCRIPTION
 
 
 ALIASES
-  $ mooi plugins add
+  $ mooi plugins:add
 
 EXAMPLES
   $ mooi plugins:install myplugin 
@@ -183,6 +185,8 @@ EXAMPLES
   $ mooi plugins:inspect myplugin
 ```
 
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/inspect.ts)_
+
 ## `mooi plugins:install PLUGIN...`
 
 Installs a plugin into the CLI.
@@ -211,7 +215,7 @@ DESCRIPTION
 
 
 ALIASES
-  $ mooi plugins add
+  $ mooi plugins:add
 
 EXAMPLES
   $ mooi plugins:install myplugin 
@@ -220,6 +224,8 @@ EXAMPLES
 
   $ mooi plugins:install someuser/someplugin
 ```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/install.ts)_
 
 ## `mooi plugins:link PLUGIN`
 
@@ -248,28 +254,7 @@ EXAMPLES
   $ mooi plugins:link myplugin
 ```
 
-## `mooi plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ mooi plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ mooi plugins unlink
-  $ mooi plugins remove
-```
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/link.ts)_
 
 ## `mooi plugins:uninstall PLUGIN...`
 
@@ -290,8 +275,8 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ mooi plugins unlink
-  $ mooi plugins remove
+  $ mooi plugins:unlink
+  $ mooi plugins:remove
 ```
 
 ## `mooi plugins:uninstall PLUGIN...`
@@ -313,17 +298,42 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ mooi plugins unlink
-  $ mooi plugins remove
+  $ mooi plugins:unlink
+  $ mooi plugins:remove
 ```
 
-## `mooi plugins update`
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/uninstall.ts)_
+
+## `mooi plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ mooi plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ mooi plugins:unlink
+  $ mooi plugins:remove
+```
+
+## `mooi plugins:update`
 
 Update installed plugins.
 
 ```
 USAGE
-  $ mooi plugins update [-h] [-v]
+  $ mooi plugins:update [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -332,4 +342,6 @@ FLAGS
 DESCRIPTION
   Update installed plugins.
 ```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
