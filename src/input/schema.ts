@@ -9,7 +9,22 @@ export type ProductCopy = {
     description?: string,
 }
 
-export function validateSchema(obj: any): ValidationResult {
+export type Config = {
+    formats?: FormatConfig[],
+}
+
+export type FormatConfig = {
+    name: string,
+    outputPath: string,
+    format: string,
+}
+
+export type ValidationResult = {
+    valid: boolean,
+    errors: string[],
+}
+
+export function validateInputSchema(obj: any): ValidationResult {
     if (!obj.languages) {
         return {
             valid: false,
@@ -76,11 +91,57 @@ function validateProductCopy(obj: any): ValidationResult {
     }
 }
 
-export function isProductCopy(obj: any): obj is ProductCopy {
-    return obj.key !== undefined && obj.value !== undefined && obj.description !== undefined;
+export function validateConfig(obj: any): ValidationResult {
+    if (obj.formats) {
+        if (!Array.isArray(obj.formats)) {
+            return {
+                valid: false,
+                errors: ['formats must be an array'],
+            }
+        }
+
+        const formats = obj.formats as any[];
+        formats.forEach((format, index) => {
+            const result = validateFormatConfig(format);
+            if (!result.valid) {
+                return {
+                    valid: false,
+                    errors: result.errors.map(e => `formats[${index}]: ${e}`),
+                }
+            }
+        });
+    }
+
+    return {
+        valid: true,
+        errors: [],
+    }
 }
 
-export type ValidationResult = {
-    valid: boolean,
-    errors: string[],
+function validateFormatConfig(obj: any): ValidationResult {
+    if (!obj.name) {
+        return {
+            valid: false,
+            errors: ['name is required'],
+        }
+    }
+
+    if (!obj.outputPath) {
+        return {
+            valid: false,
+            errors: ['outputPath is required'],
+        }
+    }
+
+    if (!obj.format) {
+        return {
+            valid: false,
+            errors: ['format is required'],
+        }
+    }
+
+    return {
+        valid: true,
+        errors: [],
+    }
 }
