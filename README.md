@@ -27,8 +27,6 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`mooi hello PERSON`](#mooi-hello-person)
-* [`mooi hello:world`](#mooi-helloworld)
 * [`mooi help [COMMANDS]`](#mooi-help-commands)
 * [`mooi plugins`](#mooi-plugins)
 * [`mooi plugins:install PLUGIN...`](#mooi-pluginsinstall-plugin)
@@ -39,48 +37,7 @@ USAGE
 * [`mooi plugins:uninstall PLUGIN...`](#mooi-pluginsuninstall-plugin-1)
 * [`mooi plugins:uninstall PLUGIN...`](#mooi-pluginsuninstall-plugin-2)
 * [`mooi plugins:update`](#mooi-pluginsupdate)
-
-## `mooi hello PERSON`
-
-Say hello
-
-```
-USAGE
-  $ mooi hello PERSON -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
-
-FLAGS
-  -f, --from=<value>  (required) Who is saying hello
-
-DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
-```
-
-_See code: [dist/commands/hello/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/hello/index.ts)_
-
-## `mooi hello:world`
-
-Say hello world
-
-```
-USAGE
-  $ mooi hello:world
-
-DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ mooi hello:world
-  hello world! (./src/commands/hello/world.ts)
-```
-
-_See code: [dist/commands/hello/world.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/hello/world.ts)_
+* [`mooi translate [INPUT]`](#mooi-translate-input)
 
 ## `mooi help [COMMANDS]`
 
@@ -344,4 +301,19 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/update.ts)_
+
+## `mooi translate [INPUT]`
+
+```
+USAGE
+  $ mooi translate [INPUT] -k <value>
+
+ARGUMENTS
+  INPUT  Input directory
+
+FLAGS
+  -k, --openAiKey=<value>  (required) OpenAI API key
+```
+
+_See code: [dist/commands/translate/index.ts](https://github.com/dmitry-zaitsev/mooi/blob/v1.0.0/dist/commands/translate/index.ts)_
 <!-- commandsstop -->
