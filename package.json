@@ -35,7 +35,7 @@
     "@types/chai": "^4",
     "@types/fs-extra": "^11.0.1",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.18.34",
+    "@types/node": "^16.18.35",
     "chai": "^4",
     "eslint": "^8.41.0",
     "eslint-config-oclif": "^4",
