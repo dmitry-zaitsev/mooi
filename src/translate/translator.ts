@@ -43,21 +43,53 @@ export class Translator {
         const store = this.storeFactory(language);
         const batchSize = this.engine.maxBatchSize();
 
-        const hashes: {[key: string]: string} = {}
+        const presentKeys = new Set(entries.map(entry => entry.key));
+        const keyToHash: {[key: string]: string} = {}
+        const hashToValue: {[hash: string]: string} = {}
         for (const entry of entries) {
-            const hash = this.hashFunction([entry.key, entry.value, entry.description || null]);
-            hashes[entry.key] = hash;
+            const hash = this.hashFunction([entry.value, entry.description || null]);
+
+            keyToHash[entry.key] = hash;
+
+            const existingValue = store.getByHash(hash)?.value;
+            if (existingValue) {
+                hashToValue[hash] = existingValue;
+            }
         }
+
+        const entriesWithExistingTranslation = entries
+            .filter(entry => {
+                const hash = keyToHash[entry.key];
+
+                const existingValue = hashToValue[hash];
+                if (!existingValue) {
+                    // Was not translated yet
+                    return false;
+                }
+
+                return true;
+            });
+
+        entriesWithExistingTranslation.forEach(entry => {
+            const hash = keyToHash[entry.key];
+            const existingValue = hashToValue[hash];
+            store.put(entry.key, existingValue, hash);
+        });
+        const keysWithExistingTranslation = new Set(entriesWithExistingTranslation.map(entry => entry.key));
 
         const entriesForTranslation = entries
             .filter(entry => {
+                if (keysWithExistingTranslation.has(entry.key)) {
+                    return false;
+                }
+
                 const existingTranslation = store.get(entry.key);
                 if (!existingTranslation) {
                     // Was not translated yet
                     return true;
                 }
 
-                const hash = hashes[entry.key];
+                const hash = keyToHash[entry.key];
 
                 if (existingTranslation.hash !== hash) {
                     // Was translated but the source changed
@@ -75,8 +107,14 @@ export class Translator {
                 const entry = batch[j];
                 const translation = translations[j];
 
-                const hash = hashes[entry.key];
+                const hash = keyToHash[entry.key];
                 store.put(entry.key, translation, hash);
+            }
+        }
+
+        for (const entry of store.entries()) {
+            if (!presentKeys.has(entry.key)) {
+                store.remove(entry.key);
             }
         }
     }

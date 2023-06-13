@@ -1,0 +1,5 @@
+languages: [de]
+entries:
+  - key: my_string
+    value: My string
+    description: A test string

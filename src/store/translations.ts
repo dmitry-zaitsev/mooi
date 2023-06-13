@@ -14,6 +14,10 @@ export interface TranslationsStore {
 
     get(key: string): TranslatedValueEntry | undefined;
 
+    getByHash(hash: string): TranslatedValueEntry | undefined;
+
+    remove(key: string): void;
+
     contains(key: string): boolean;
 
     entries(): TranslatedValueEntry[];
@@ -63,6 +67,22 @@ export class DiskTranslationsStore implements TranslationsStore {
 
     public get(key: string): TranslatedValueEntry | undefined {
         return this.cache.get(key);
+    }
+
+    public getByHash(hash: string): TranslatedValueEntry | undefined {
+        // TODO: optimize to O(1)
+        for (const entry of this.cache.values()) {
+            if (entry.hash === hash) {
+                return entry;
+            }
+        }
+
+        return undefined;
+    }
+
+    public remove(key: string): void {
+        this.cache.delete(key);
+        this.saveCache();
     }
 
     public contains(key: string): boolean {

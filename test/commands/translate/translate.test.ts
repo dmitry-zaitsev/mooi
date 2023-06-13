@@ -40,12 +40,12 @@ describe('mooi translate', () => {
                     {
                         key: 'my_string',
                         value: 'de(My string)',
-                        hash: 'hash(my_string,My string,A test string)',
+                        hash: 'hash(My string,A test string)',
                     },
                     {
                         key: 'my_string_without_description',
                         value: 'de(My string without description)',
-                        hash: 'hash(my_string_without_description,My string without description)',
+                        hash: 'hash(My string without description)',
                     }
                 ]
             )
@@ -56,12 +56,12 @@ describe('mooi translate', () => {
                     {
                         key: 'my_string',
                         value: 'nl(My string)',
-                        hash: 'hash(my_string,My string,A test string)',
+                        hash: 'hash(My string,A test string)',
                     },
                     {
                         key: 'my_string_without_description',
                         value: 'nl(My string without description)',
-                        hash: 'hash(my_string_without_description,My string without description)',
+                        hash: 'hash(My string without description)',
                     }
                 ]
             )
@@ -77,12 +77,12 @@ describe('mooi translate', () => {
         .do(() => {
             // Assuming those strings were already translated and the hash matches
             fakeTranslationStore('de')
-                .put('my_string', 'Existing translation', 'hash(my_string,My string,A test string)');
+                .put('my_string', 'Existing translation', 'hash(My string,A test string)');
             fakeTranslationStore('de')
                 .put('my_string_without_description', 'Existing translation', 'Hash that does not match');
 
             fakeTranslationStore('nl')
-                .put('my_string', 'Existing translation', 'hash(my_string,My string,A test string)');
+                .put('my_string', 'Existing translation', 'hash(My string,A test string)');
         })
         .command(['translate', 'test/assets/cases/defaultOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
         .it('only translate entries that were not translated already', ctx => {
@@ -94,12 +94,12 @@ describe('mooi translate', () => {
                     {
                         key: 'my_string',
                         value: 'Existing translation',
-                        hash: 'hash(my_string,My string,A test string)',
+                        hash: 'hash(My string,A test string)',
                     },
                     {
                         key: 'my_string_without_description',
                         value: 'de(My string without description)',
-                        hash: 'hash(my_string_without_description,My string without description)',
+                        hash: 'hash(My string without description)',
                     }
                 ]
             )
@@ -110,21 +110,47 @@ describe('mooi translate', () => {
                     {
                         key: 'my_string',
                         value: 'Existing translation',
-                        hash: 'hash(my_string,My string,A test string)',
+                        hash: 'hash(My string,A test string)',
                     },
                     {
                         key: 'my_string_without_description',
                         value: 'nl(My string without description)',
-                        hash: 'hash(my_string_without_description,My string without description)',
+                        hash: 'hash(My string without description)',
                     }
                 ]
             )
 
             // Expect 2 calls:
-            //  - my_string_without_description in German (because the hash does not match)
+            // - my_string_without_description in German (because the hash does not match)
             // - my_string_without_description in Dutch (because it was not translated yet)
             expect(fakeTranslatorEngine.invocationCount()).eq(2);
 
             expect(fakeFormatter.writtenTranslations().length).eq(4);
+        })
+
+    test
+        .do(() => initializeDependencies())
+        .do(() => {
+            // Assuming those strings were already translated and the hash matches
+            fakeTranslationStore('de')
+                .put('my_string_with_modified_key', 'Existing translation', 'hash(My string,A test string)');
+        })
+        .command(['translate', 'test/assets/cases/modifiedKey/mooi', '--openAiKey', 'fakeOpenAiKey'])
+        .it('reuse values if only key has changed', ctx => {
+            expect(storedLanguages()).to.have.members(['de']);
+
+            const deEntries = fakeTranslationStore('de').entries();
+            expect(deEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'Existing translation',
+                        hash: 'hash(My string,A test string)',
+                    },
+                ]
+            )
+
+            expect(fakeTranslatorEngine.invocationCount()).eq(0);
+            expect(fakeFormatter.writtenTranslations().length).eq(1);
         })
 })

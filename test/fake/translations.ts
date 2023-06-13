@@ -12,6 +12,20 @@ export class InMemoryTranslationStore implements TranslationsStore {
         return this.store.get(key);
     }
 
+    public getByHash(hash: string): TranslatedValueEntry | undefined {
+        for (const entry of this.store.values()) {
+            if (entry.hash === hash) {
+                return entry;
+            }
+        }
+
+        return undefined;
+    }
+
+    public remove(key: string): void {
+        this.store.delete(key);
+    }
+
     public contains(key: string): boolean {
         return this.store.has(key);
     }
