@@ -26,6 +26,10 @@ export class InMemoryTranslationStore implements TranslationsStore {
         this.store.delete(key);
     }
 
+    public clear(): void {
+        this.store.clear();
+    }
+
     public contains(key: string): boolean {
         return this.store.has(key);
     }

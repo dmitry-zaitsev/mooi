@@ -34,6 +34,23 @@ export class Translator {
             await this.translateLanguage(language, entries);
             await this.applyFormat(context, language);
         }
+
+        await this.passThroughOriginalLanguage(context, entries);
+    }
+
+    private async passThroughOriginalLanguage(
+        context: TranslatorContext,
+        entries: ProductCopy[]
+    ): Promise<void> {
+        const languageCode = 'en'; // TODO make configurable
+        const store = this.storeFactory(languageCode);
+        store.clear();
+
+        entries.forEach(entry => {
+            store.put(entry.key, entry.value, this.hashFunction([entry.value, entry.description || null]));
+        });
+
+        await this.applyFormat(context, languageCode);
     }
 
     private async translateLanguage(

@@ -18,6 +18,8 @@ export interface TranslationsStore {
 
     remove(key: string): void;
 
+    clear(): void;
+
     contains(key: string): boolean;
 
     entries(): TranslatedValueEntry[];
@@ -82,6 +84,11 @@ export class DiskTranslationsStore implements TranslationsStore {
 
     public remove(key: string): void {
         this.cache.delete(key);
+        this.saveCache();
+    }
+
+    public clear(): void {
+        this.cache.clear();
         this.saveCache();
     }
 

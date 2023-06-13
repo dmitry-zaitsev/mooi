@@ -32,7 +32,23 @@ describe('mooi translate', () => {
         .do(() => initializeDependencies())
         .command(['translate', 'test/assets/cases/defaultOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
         .it('translate file in a project of unknown format', ctx => {
-            expect(storedLanguages()).to.have.members(['de', 'nl']);
+            expect(storedLanguages()).to.have.members(['en', 'de', 'nl']);
+
+            const enEntries = fakeTranslationStore('en').entries();
+            expect(enEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'My string',
+                        hash: 'hash(My string,A test string)',
+                    },
+                    {
+                        key: 'my_string_without_description',
+                        value: 'My string without description',
+                        hash: 'hash(My string without description)',
+                    }
+                ]
+            )
 
             const deEntries = fakeTranslationStore('de').entries();
             expect(deEntries).deep.eq(
@@ -69,7 +85,8 @@ describe('mooi translate', () => {
             // 2 languages * 2 entries
             expect(fakeTranslatorEngine.invocationCount()).eq(4);
 
-            expect(fakeFormatter.writtenTranslations().length).eq(4);
+            // 2 DE + 2 NL + 2 EN
+            expect(fakeFormatter.writtenTranslations().length).eq(6);
         })
 
     test
@@ -86,7 +103,7 @@ describe('mooi translate', () => {
         })
         .command(['translate', 'test/assets/cases/defaultOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
         .it('only translate entries that were not translated already', ctx => {
-            expect(storedLanguages()).to.have.members(['de', 'nl']);
+            expect(storedLanguages()).to.have.members(['en', 'de', 'nl']);
 
             const deEntries = fakeTranslationStore('de').entries();
             expect(deEntries).deep.eq(
@@ -125,7 +142,7 @@ describe('mooi translate', () => {
             // - my_string_without_description in Dutch (because it was not translated yet)
             expect(fakeTranslatorEngine.invocationCount()).eq(2);
 
-            expect(fakeFormatter.writtenTranslations().length).eq(4);
+            expect(fakeFormatter.writtenTranslations().length).eq(6);
         })
 
     test
@@ -137,7 +154,7 @@ describe('mooi translate', () => {
         })
         .command(['translate', 'test/assets/cases/modifiedKey/mooi', '--openAiKey', 'fakeOpenAiKey'])
         .it('reuse values if only key has changed', ctx => {
-            expect(storedLanguages()).to.have.members(['de']);
+            expect(storedLanguages()).to.have.members(['en', 'de']);
 
             const deEntries = fakeTranslationStore('de').entries();
             expect(deEntries).deep.eq(
@@ -151,6 +168,6 @@ describe('mooi translate', () => {
             )
 
             expect(fakeTranslatorEngine.invocationCount()).eq(0);
-            expect(fakeFormatter.writtenTranslations().length).eq(1);
+            expect(fakeFormatter.writtenTranslations().length).eq(2);
         })
 })
