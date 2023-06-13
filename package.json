@@ -1,6 +1,6 @@
 {
   "name": "mooi-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Translation application for software projects",
   "author": "Dmitry Zaytsev",
   "bin": {
