@@ -4,6 +4,7 @@ import { TranslationStoreFactory, createDiskTranslationStoreFactory } from "../s
 import { Translator } from "../translate";
 import { TranlsatorEngine } from "../translate/engine";
 import { OpenaiTranslatorEngine } from "../translate/engine/openai";
+import { ConsolePrinter, Printer } from "../util/printer";
 
 export let underTest: boolean = false;
 
@@ -29,8 +30,11 @@ export type DiParams = {
 export class App {
 
     public static translator: Translator;
+    public static printer: Printer;
 
     public static initialize(module: AppModule): void {
+        this.printer = new ConsolePrinter();
+
         App.translator = new Translator(
             module.translatorEngine,
             module.outputFormatter,

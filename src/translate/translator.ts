@@ -1,4 +1,5 @@
 import { HashFunction } from "../crypto";
+import { App } from "../di";
 import { ProductCopy } from "../input";
 import { Formatter, FormatterContext, Translation } from "../output";
 import { TranslationStoreFactory } from "../store/translations";
@@ -31,6 +32,7 @@ export class Translator {
         entries: ProductCopy[]
     ): Promise<void> {
         for (const language of languages) {
+            App.printer.info(`Translating to ${language}:`);
             await this.translateLanguage(language, entries);
             await this.applyFormat(context, language);
         }
@@ -116,8 +118,19 @@ export class Translator {
                 return false;
             });
 
+        if (entriesForTranslation.length === 0) {
+            App.printer.info(`    Nothing new to translate`);
+            return;
+        }
+
         for (let i = 0; i < entriesForTranslation.length; i += batchSize) {
             const batch = entriesForTranslation.slice(i, i + batchSize);
+            
+            App.printer.info(`  Translating batch of ${batch.length}`);
+            for (const entry of batch) {
+                App.printer.info(`    ${entry.key}`);
+            }
+
             const translations = await this.engine.translate(batch, language);
 
             for (let j = 0; j < batch.length; j++) {
