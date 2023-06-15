@@ -120,7 +120,6 @@ export class Translator {
 
         if (entriesForTranslation.length === 0) {
             App.printer.info(`    Nothing new to translate`);
-            return;
         }
 
         for (let i = 0; i < entriesForTranslation.length; i += batchSize) {
