@@ -1,7 +1,10 @@
 import { Configuration, OpenAIApi } from "openai";
 import { ProductCopy } from "../../input";
 import { TranlsatorEngine } from "./engine";
+import { logger } from "../../util/logging";
 const dJSON = require('dirty-json');
+
+const MODEL = 'gpt-4'
 
 export class OpenaiTranslatorEngine implements TranlsatorEngine {
 
@@ -16,7 +19,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
     public async translate(input: ProductCopy[], languageCode: string): Promise<string[]> {
         const completionResponse = await this.openAi.createChatCompletion(
             {
-                model: 'gpt-4',
+                model: MODEL,
                 messages: [
                     {
                         role: 'user',
@@ -40,6 +43,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             ?.content
 
         if (!aiMessage) {
+            logger.error(`No response from OpenAI`, completionResponse);
             throw new Error('No response from OpenAI');
         }
 
@@ -53,8 +57,13 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             const jsonString = matches[0];
     
             jsonResponse = dJSON.parse(jsonString);
+
+            if (!jsonResponse.translations) {
+                throw new Error('No translations found in JSON model');
+            }
         } catch (e) {
-            console.log(`Failed to parse JSON from Open AI response: ${aiMessage}`)
+            logger.error(`Failed to parse JSON from Open AI response: ${aiMessage}`, e);
+            console.error(`Failed to parse JSON from Open AI response: ${aiMessage}`);
             throw e
         }
 
@@ -88,6 +97,6 @@ const PROMPTS = {
         }
         \`\`\`
 
-        I will only reply with json without backticks. You can provide an input now.
+        I will only reply with JSON. You can provide an input now.
     `
 }

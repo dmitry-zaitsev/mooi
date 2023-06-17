@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { App, inittializeDependencies } from "../../di";
 import { readInputFolder } from "../../input";
 import { TranslatorContext } from "../../translate";
+import { logger } from "../../util/logging";
 
 export default class Translate extends Command {
 
@@ -15,6 +16,8 @@ export default class Translate extends Command {
     }
 
     async run(): Promise<any> {
+        logger.info('Running translate command');
+
         const {args, flags} = await this.parse(Translate);
 
         let inputDirectory = args.input;
