@@ -99,4 +99,6 @@ const PROMPTS = {
 
         I will only reply with JSON. You can provide an input now.
     `
+        .replace('{{SOURCE_LANGUAGE}}', sourceLanguage)
+        .replace('{{TARGET_LANGUAGE}}', targetLanguage),
 }
