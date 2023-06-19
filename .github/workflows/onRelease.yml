@@ -16,4 +16,6 @@ jobs:
     with:
       tag: latest
       githubTag: ${{ github.event.release.tag_name || inputs.tag }}
-    secrets: inherit
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WRAPPED_GITHUB_TOKEN }}
