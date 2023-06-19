@@ -34,7 +34,3 @@ jobs:
         with:
           tag_name: ${{ steps.packageVersion.outputs.prop }}
           release_name: ${{ steps.packageVersion.outputs.prop }}
-      - uses: oclif/github-workflows/.github/workflows/npmPublish.yml@main
-        with:
-          tag: latest
-          githubTag: ${{ steps.packageVersion.outputs.prop }}
