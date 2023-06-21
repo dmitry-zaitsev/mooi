@@ -47,6 +47,8 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             throw new Error('No response from OpenAI');
         }
 
+        logger.info(`OpenAI response: ${aiMessage}`);
+
         let translations: any = null;
         try {
             const jsonRegex = /{[\s\S]*}/;
@@ -71,7 +73,14 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             throw e
         }
 
-        return translations.map((t: any) => t.value);
+        return translations.map((t: any) => {
+            // Sometimes GPT wraps the value in an object
+            if (t.value.value) {
+                return t.value.value;
+            }
+
+            return t.value;
+        });
     }
 
     public maxBatchSize(): number {
