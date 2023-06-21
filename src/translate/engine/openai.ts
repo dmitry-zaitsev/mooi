@@ -47,7 +47,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             throw new Error('No response from OpenAI');
         }
 
-        let jsonResponse: any = null;
+        let translations: any = null;
         try {
             const jsonRegex = /{[\s\S]*}/;
             const matches = aiMessage.match(jsonRegex);
@@ -56,9 +56,13 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             }
             const jsonString = matches[0];
     
-            jsonResponse = dJSON.parse(jsonString);
+            const jsonResponse = dJSON.parse(jsonString);
 
-            if (!jsonResponse.translations) {
+            if (jsonResponse.translations) {
+                translations = jsonResponse.translations;
+            } else if (Array.isArray(jsonResponse)) {
+                translations = jsonResponse;
+            } else {
                 throw new Error('No translations found in JSON model');
             }
         } catch (e) {
@@ -67,7 +71,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             throw e
         }
 
-        return jsonResponse.translations.map((t: any) => t.value);
+        return translations.map((t: any) => t.value);
     }
 
     public maxBatchSize(): number {
