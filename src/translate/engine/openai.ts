@@ -51,7 +51,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
 
         let translations: any = null;
         try {
-            const jsonRegex = /{[\s\S]*}/;
+            const jsonRegex = /\[[\s\S]*\]/;
             const matches = aiMessage.match(jsonRegex);
             if (!matches) {
                 throw new Error('No JSON found in response');
@@ -60,9 +60,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
     
             const jsonResponse = dJSON.parse(jsonString);
 
-            if (jsonResponse.translations) {
-                translations = jsonResponse.translations;
-            } else if (Array.isArray(jsonResponse)) {
+            if (Array.isArray(jsonResponse)) {
                 translations = jsonResponse;
             } else {
                 throw new Error('No translations found in JSON model');
@@ -73,18 +71,21 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
             throw e
         }
 
-        return translations.map((t: any) => {
-            // Sometimes GPT wraps the value in an object
-            if (t.value.value) {
-                return t.value.value;
+        // Validate that each value is a string
+        translations.forEach((t: any) => {
+            if (typeof t.value !== 'string') {
+                logger.error(`Invalid translation value: ${t.value}`, aiMessage);
+                throw new Error(`Invalid translation value: ${t.value}`);
             }
+        });
 
+        return translations.map((t: any) => {
             return t.value;
         });
     }
 
     public maxBatchSize(): number {
-        return 5;
+        return 3;
     }
         
 }
@@ -92,7 +93,16 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
 const PROMPTS = {
     init: (sourceLanguage: string, targetLanguage: string) => `
         I want you to translate some strings from language code {{SOURCE_LANGUAGE}} to language code {{TARGET_LANGUAGE}}.
-        Do not reply. Just translate the strings in some format.
+        Respond with JSON in the following schema. 
+
+        [
+            {
+                "key": "inputKey1",
+                "value": "translatedValue1"
+            }
+        ]
+        
+        Do include the reply.
     `
         .replace('{{SOURCE_LANGUAGE}}', sourceLanguage)
         .replace('{{TARGET_LANGUAGE}}', targetLanguage),
@@ -100,17 +110,15 @@ const PROMPTS = {
         I will translate strings from language code {{SOURCE_LANGUAGE}} to language code {{TARGET_LANGUAGE}}. I will provide output in the following format:
 
         \`\`\`
-        {
-            "translations": [
-                {
-                    "key": "inputKey1",
-                    "value": "translatedValue1"
-                }
-            ]
-        }
+        [
+            {
+                "key": "inputKey1",
+                "value": "translatedValue1"
+            }
+        ]
         \`\`\`
 
-        I will only reply with JSON. You can provide an input now.
+        I will not include the reply. You can provide an input now.
     `
         .replace('{{SOURCE_LANGUAGE}}', sourceLanguage)
         .replace('{{TARGET_LANGUAGE}}', targetLanguage),
