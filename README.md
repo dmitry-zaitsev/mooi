@@ -9,7 +9,7 @@ A more detailed README is coming soon, stay tuned!
 Install it via npm:
 
 ```
-npm -g mooi-cli
+npm i -g mooi-cli
 ```
 
 ## Use it
