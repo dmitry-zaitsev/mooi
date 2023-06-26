@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import {App, setUnderTest} from '../../../src/di';
+import {App, initializeForTests} from '../../../src/di';
 import { FakeTranslatorEngine } from '../../fake/engine';
 import { clearTranslationStores, fakeTranslationStore, fakeTranslationStoreFactory, storedLanguages } from '../../fake/translations';
 import { FakeFormatter } from '../../fake/formatter';
@@ -10,17 +10,15 @@ let fakeTranslatorEngine: FakeTranslatorEngine;
 let fakeFormatter: FakeFormatter;
 
 function initializeDependencies(): void {
-    setUnderTest();
-
     fakeTranslatorEngine = new FakeTranslatorEngine();
     fakeFormatter = new FakeFormatter();
 
-    App.initialize({
+    initializeForTests({
         translatorEngine: fakeTranslatorEngine,
         translationStoreFactory: fakeTranslationStoreFactory,
         outputFormatter: fakeFormatter,
         hashFunction: fakeHashFunction,
-    })
+    });
 }
 
 describe('mooi translate', () => {

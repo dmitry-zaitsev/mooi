@@ -1,9 +1,9 @@
 import { Args, Command, Flags } from "@oclif/core";
-import * as fs from 'fs';
 import { App, inittializeDependencies } from "../../di";
 import { readInputFolder } from "../../input";
 import { TranslatorContext } from "../../translate";
 import { logger } from "../../util/logging";
+import { inferDiParams } from "../../di/inferParams";
 
 export default class Translate extends Command {
 
@@ -12,7 +12,7 @@ export default class Translate extends Command {
     }
 
     static flags = {
-        openAiKey: Flags.string({ char: 'k', description: 'OpenAI API key', required: true }),
+        openAiKey: Flags.string({ char: 'k', description: 'OpenAI API key', required: false }),
     }
 
     async run(): Promise<any> {
@@ -20,25 +20,24 @@ export default class Translate extends Command {
 
         const {args, flags} = await this.parse(Translate);
 
-        let inputDirectory = args.input;
-        if (!inputDirectory) {
-            inputDirectory = './mooi';
+        const diParamsResult = inferDiParams({
+            commandLineArgs: {
+                openAiApiKey: flags.openAiKey,
+                inputDirectory: args.input,
+            }
+        });
+
+        if (diParamsResult.isErr()) {
+            this.error(diParamsResult.unwrapErr().message);
         }
 
-        if (!fs.existsSync(inputDirectory)) {
-            this.error(`${inputDirectory} does not exist`);
-        }
+        inittializeDependencies(diParamsResult.unwrap());
 
-        inittializeDependencies({
-            openAiApiKey: flags.openAiKey,
-            inputDirectory: inputDirectory,
-        })
-
-        const inputModel = await readInputFolder(inputDirectory);
+        const inputModel = await readInputFolder(App.inputDirectory);
 
         const context: TranslatorContext = {
             rootDir: process.cwd(),
-            inputDir: inputDirectory,
+            inputDir: App.inputDirectory,
         }
 
         App.translator.translate(
