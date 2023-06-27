@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import {App, initializeForTests} from '../../../src/di';
+import {initializeForTests} from '../../../src/di';
 import { FakeTranslatorEngine } from '../../fake/engine';
 import { clearTranslationStores, fakeTranslationStore, fakeTranslationStoreFactory, storedLanguages } from '../../fake/translations';
 import { FakeFormatter } from '../../fake/formatter';

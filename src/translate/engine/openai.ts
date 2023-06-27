@@ -6,13 +6,19 @@ const dJSON = require('dirty-json');
 
 const MODEL = 'gpt-4'
 
+interface OpenaiEngineConfig {
+    apiKey: string;
+    baseUrl?: string;
+}
+
 export class OpenaiTranslatorEngine implements TranlsatorEngine {
 
     private openAi: OpenAIApi
 
-    constructor(apiKey: string) {
+    constructor(config: OpenaiEngineConfig) {
         this.openAi = new OpenAIApi(new Configuration({
-            apiKey
+            apiKey: config.apiKey,
+            basePath: config.baseUrl,
         }));
     }
     

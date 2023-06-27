@@ -1,4 +1,5 @@
 import { HashFunction, sha1HashFunction } from "../crypto";
+import { Config } from "../input";
 import { Formatter, YamlBasedFormatter } from "../output";
 import { TranslationStoreFactory, createDiskTranslationStoreFactory } from "../store";
 import { Translator } from "../translate";
@@ -22,6 +23,7 @@ export type AppModule = {
 export type DiParams = {
     openAiApiKey: string;
     inputDirectory: string;
+    config: Config | null;
 }
 
 export class App {
@@ -46,7 +48,10 @@ export class App {
 
 export const inittializeDependencies = (params: DiParams) => {
     App.initialize({
-        translatorEngine: new OpenaiTranslatorEngine(params.openAiApiKey),
+        translatorEngine: new OpenaiTranslatorEngine({
+            apiKey: params.openAiApiKey,
+            baseUrl: params.config?.openai?.url,
+        }),
         hashFunction: sha1HashFunction,
         translationStoreFactory: createDiskTranslationStoreFactory(params.inputDirectory),
         outputFormatter: new YamlBasedFormatter(),

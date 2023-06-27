@@ -11,6 +11,11 @@ export type ProductCopy = {
 
 export type Config = {
     formats?: FormatConfig[],
+    openai?: OpenaiEngineConfig,
+}
+
+export type OpenaiEngineConfig = {
+    url?: string,
 }
 
 export type FormatConfig = {

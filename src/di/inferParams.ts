@@ -1,6 +1,7 @@
 import { DiParams } from ".";
 import * as fs from 'fs';
 import { Result, Err, Ok } from '@sniptt/monads';
+import { readConfig } from "../input";
 
 interface InferDiContext {
     commandLineArgs: CommandLineArgs;
@@ -15,7 +16,7 @@ export interface InferDiParamsError {
     message: string;
 }
 
-export const inferDiParams = (context: InferDiContext): Result<DiParams, InferDiParamsError> => {
+export const inferDiParams = async (context: InferDiContext): Promise<Result<DiParams, InferDiParamsError>> => {
     let inputDirectory = context.commandLineArgs.inputDirectory;
     if (!inputDirectory) {
         inputDirectory = './mooi';
@@ -27,8 +28,11 @@ export const inferDiParams = (context: InferDiContext): Result<DiParams, InferDi
         });
     }
 
+    const config = await readConfig(inputDirectory);
+
     return Ok({
         openAiApiKey: context.commandLineArgs.openAiApiKey || '',
-        inputDirectory: inputDirectory,
+        inputDirectory,
+        config,
     });
 }

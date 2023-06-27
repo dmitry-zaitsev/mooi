@@ -20,7 +20,7 @@ export default class Translate extends Command {
 
         const {args, flags} = await this.parse(Translate);
 
-        const diParamsResult = inferDiParams({
+        const diParamsResult = await inferDiParams({
             commandLineArgs: {
                 openAiApiKey: flags.openAiKey,
                 inputDirectory: args.input,
