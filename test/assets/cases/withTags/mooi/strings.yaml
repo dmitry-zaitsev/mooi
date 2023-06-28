@@ -1,0 +1,13 @@
+languages: [nl]
+entries:
+  - key: without_tag
+    value: Without tag
+  - key: with_tag
+    value: String with a tag
+    tags: [tagA]
+  - key: many_tags
+    value: String with many tags
+    tags: [tagB, tagC]
+  - key: wrong_tag
+    value: String with a wrong tag
+    tags: [tagB]

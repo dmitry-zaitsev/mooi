@@ -168,4 +168,120 @@ describe('mooi translate', () => {
             expect(fakeTranslatorEngine.invocationCount()).eq(0);
             expect(fakeFormatter.writtenTranslations().length).eq(2);
         })
+
+    test
+        .do(() => initializeDependencies())
+        .command(['translate', 'test/assets/cases/defaultOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
+        .it('translate file in a project of unknown format', ctx => {
+            expect(storedLanguages()).to.have.members(['en', 'de', 'nl']);
+
+            const enEntries = fakeTranslationStore('en').entries();
+            expect(enEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'My string',
+                        hash: 'hash(My string,A test string)',
+                    },
+                    {
+                        key: 'my_string_without_description',
+                        value: 'My string without description',
+                        hash: 'hash(My string without description)',
+                    }
+                ]
+            )
+
+            const deEntries = fakeTranslationStore('de').entries();
+            expect(deEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'de(My string)',
+                        hash: 'hash(My string,A test string)',
+                    },
+                    {
+                        key: 'my_string_without_description',
+                        value: 'de(My string without description)',
+                        hash: 'hash(My string without description)',
+                    }
+                ]
+            )
+
+            const nlEntries = fakeTranslationStore('nl').entries();
+            expect(nlEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'nl(My string)',
+                        hash: 'hash(My string,A test string)',
+                    },
+                    {
+                        key: 'my_string_without_description',
+                        value: 'nl(My string without description)',
+                        hash: 'hash(My string without description)',
+                    }
+                ]
+            )
+
+            // 2 languages * 2 entries
+            expect(fakeTranslatorEngine.invocationCount()).eq(4);
+
+            // 2 DE + 2 NL + 2 EN
+            expect(fakeFormatter.writtenTranslations().length).eq(6);
+        })
+
+    test
+        .do(() => initializeDependencies())
+        .command(['translate', 'test/assets/cases/withTags/mooi', '--includeTags', 'tagA,tagC', '--openAiKey', 'fakeOpenAiKey'])
+        .it('translate only given tags', ctx => {
+            expect(storedLanguages()).to.have.members(['en', 'nl']);
+
+            const enEntries = fakeTranslationStore('en').entries();
+            expect(enEntries).deep.eq(
+                [
+                    {
+                        key: 'without_tag',
+                        value: 'Without tag',
+                        hash: 'hash(Without tag)',
+                    },
+                    {
+                        key: 'with_tag',
+                        value: 'String with a tag',
+                        hash: 'hash(String with a tag)',
+                    },
+                    {
+                        key: 'many_tags',
+                        value: 'String with many tags',
+                        hash: 'hash(String with many tags)',
+                    },
+                    {
+                        key: 'wrong_tag',
+                        value: 'String with a wrong tag',
+                        hash: 'hash(String with many tags)',
+                    }
+                ]
+            )
+
+            const nlEntries = fakeTranslationStore('nl').entries();
+            expect(nlEntries).deep.eq(
+                [
+                    {
+                        key: 'with_tag',
+                        value: 'nl(String with a tag)',
+                        hash: 'hash(String with a tag)',
+                    },
+                    {
+                        key: 'many_tags',
+                        value: 'nl(String with many tags)',
+                        hash: 'hash(String with many tags)',
+                    }
+                ]
+            )
+
+            // 1 language * 2 entries
+            expect(fakeTranslatorEngine.invocationCount()).eq(2);
+
+            // 2 NL + 2 EN
+            expect(fakeFormatter.writtenTranslations().length).eq(4);
+        })
 })

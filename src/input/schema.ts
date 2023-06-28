@@ -7,6 +7,7 @@ export type ProductCopy = {
     key: string,
     value: string,
     description?: string,
+    tags?: string[],
 }
 
 export type Config = {
