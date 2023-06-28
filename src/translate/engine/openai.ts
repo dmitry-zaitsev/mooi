@@ -9,6 +9,7 @@ const MODEL = 'gpt-4'
 interface OpenaiEngineConfig {
     apiKey: string;
     baseUrl?: string;
+    urlParams?: Record<string, string>;
 }
 
 export class OpenaiTranslatorEngine implements TranlsatorEngine {
@@ -19,6 +20,14 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
         this.openAi = new OpenAIApi(new Configuration({
             apiKey: config.apiKey,
             basePath: config.baseUrl,
+            baseOptions: {
+                headers: {
+                    'api-key': config.apiKey,
+                },
+                params: {
+                    ...config.urlParams,
+                }
+            }
         }));
     }
     

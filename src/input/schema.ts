@@ -16,6 +16,7 @@ export type Config = {
 
 export type OpenaiEngineConfig = {
     url?: string,
+    urlParams?: Record<string, string>,
 }
 
 export type FormatConfig = {

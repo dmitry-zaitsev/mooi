@@ -51,6 +51,7 @@ export const inittializeDependencies = (params: DiParams) => {
         translatorEngine: new OpenaiTranslatorEngine({
             apiKey: params.openAiApiKey,
             baseUrl: params.config?.openai?.url,
+            urlParams: params.config?.openai?.urlParams,
         }),
         hashFunction: sha1HashFunction,
         translationStoreFactory: createDiskTranslationStoreFactory(params.inputDirectory),
