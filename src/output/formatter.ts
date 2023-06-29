@@ -3,7 +3,7 @@ import { Translation } from "./schema";
 export type FormatterContext = {
     rootDir: string;
     inputDir: string;
-    includedTags?: string[];
+    formatName?: string;
 }
 
 export interface Formatter {

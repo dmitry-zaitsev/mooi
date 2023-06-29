@@ -1,5 +1,5 @@
 import Handlebars = require("handlebars");
-import { readConfig } from "../input";
+import { FormatConfig, readConfig } from "../input";
 import { Formatter, FormatterContext } from "./formatter";
 import { Translation } from "./schema";
 import * as fs from 'fs';
@@ -14,8 +14,10 @@ export class YamlBasedFormatter implements Formatter {
             return;
         }
 
+        this.verifyNoDuplicateDefaultFormats(config.formats);
+
         // TODO allow multiple formats
-        const format = config.formats.find(format => format.name === 'default');
+        const format = config.formats.find(format => !format.name || format.name === 'default');
 
         if (!format) {
             return;
@@ -44,6 +46,12 @@ export class YamlBasedFormatter implements Formatter {
             fse.ensureFileSync(outputPath);
 
             fs.writeFileSync(outputPath, content);
+        }
+    }
+
+    private verifyNoDuplicateDefaultFormats(formats: FormatConfig[]) {
+        if (formats.filter(format => !format.name || format.name === 'default').length > 1) {
+            throw new Error(`Only one format can be named default`);
         }
     }
 

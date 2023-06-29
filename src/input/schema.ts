@@ -20,7 +20,7 @@ export type OpenaiEngineConfig = {
 }
 
 export type FormatConfig = {
-    name: string,
+    name?: string,
     outputPath: string,
     format: string,
 }

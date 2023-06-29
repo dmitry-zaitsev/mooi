@@ -1,6 +1,5 @@
 formats:
-  - name: default
-    outputPath: tmp/translations_{{languageCode}}/translations.json
+  - outputPath: tmp/translations_{{languageCode}}/translations.json
     format: |
       {
         {{#each translations}}
