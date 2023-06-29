@@ -1,0 +1,25 @@
+formats:
+  - name: notAllTagsMatch
+    useWhen:
+      tagsInclude: [customTag, anotherTag]
+    outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: ''
+  - name: alternative
+    useWhen:
+      tagsInclude: [customTag]
+    outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: |
+      {
+        "alternative": {
+        {{#each translations}}
+          "{{this.key}}": "{{this.value}}" {{#unless @last}},{{/unless}}
+        {{/each}}
+        }
+      }
+  - outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: |
+      {
+        {{#each translations}}
+          "{{this.key}}": "{{this.value}}" {{#unless @last}},{{/unless}}
+        {{/each}}
+      }
