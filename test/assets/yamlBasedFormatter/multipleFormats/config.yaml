@@ -1,0 +1,18 @@
+formats:
+  - name: alternative
+    outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: |
+      {
+        "alternative": {
+        {{#each translations}}
+          "{{this.key}}": "{{this.value}}" {{#unless @last}},{{/unless}}
+        {{/each}}
+        }
+      }
+  - outputPath: tmp/translations_{{languageCode}}/translations.json
+    format: |
+      {
+        {{#each translations}}
+          "{{this.key}}": "{{this.value}}" {{#unless @last}},{{/unless}}
+        {{/each}}
+      }

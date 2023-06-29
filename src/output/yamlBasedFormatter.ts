@@ -16,8 +16,15 @@ export class YamlBasedFormatter implements Formatter {
 
         this.verifyNoDuplicateDefaultFormats(config.formats);
 
-        // TODO allow multiple formats
-        const format = config.formats.find(format => !format.name || format.name === 'default');
+        let format: FormatConfig | undefined;
+        if (context.formatName) {
+            format = config.formats.find(format => format.name === context.formatName);
+            if (!format) {
+                throw new Error(`Format with name ${context.formatName} not found`);
+            }
+        } else {
+            format = config.formats.find(format => !format.name || format.name === 'default');
+        }
 
         if (!format) {
             return;

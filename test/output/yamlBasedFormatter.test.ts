@@ -50,6 +50,40 @@ describe('yamlBasedFormatter', () => {
         });
     });
 
+    it('should use a specified format', async () => {
+        // Given
+        const testee = new YamlBasedFormatter();
+
+        // When
+        await testee.write(
+            {
+                rootDir: 'test',
+                inputDir: 'test/assets/yamlBasedFormatter/multipleFormats',
+                formatName: 'alternative'
+            },
+            translations,
+        );
+
+        // Then
+        expect(fs.existsSync('tmp/translations_nl/translations.json')).to.be.true;
+        expect(fs.existsSync('tmp/translations_de/translations.json')).to.be.true;
+
+        const translationsNl = JSON.parse(fs.readFileSync('tmp/translations_nl/translations.json', 'utf8'));
+        expect(translationsNl).to.deep.eq({
+            alternative: {
+                A: 'nl(Value A)',
+            }
+        });
+
+        const translationsDe = JSON.parse(fs.readFileSync('tmp/translations_de/translations.json', 'utf8'));
+        expect(translationsDe).to.deep.eq({
+            alternative: {
+                A: 'de(Value A)',
+            }
+        });
+    });
+
+
     it('should do nothing if config does not contain formats', async () => {
         // Given
         const testee = new YamlBasedFormatter();
