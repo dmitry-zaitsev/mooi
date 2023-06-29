@@ -1,8 +1,22 @@
+![logo64](https://github.com/dmitry-zaitsev/mooi/assets/2990722/82c82da6-a6d0-4f60-9787-c45e136c2987)
+
 # mooi
 
-Tool for generating AI translations.
+*mooi* is a language translator that:
 
-A more detailed README is coming soon, stay tuned!
+- Is aware in what context the text is going to be used (thanks to GPT).
+- Supports nearly every imaginable framework (Spring, Android, iOS, React, etc.).
+- Only translates values that weren't translated already.
+
+## How it Works
+
+At a high level:
+
+- Define your product copies in a `yaml` file
+- Attach a description to each of your copies (just as you would do with a real translator)
+- Configure in what format you would like your output to be.
+- Run `mooi-cli` and get the result.
+- Commit the changes.
 
 ## Installation
 
@@ -37,8 +51,7 @@ By default, results are generated in `mooi/translations` folder. If you want to 
 
 ```yaml
 formats:
-  - name: default     # 'default' is a keyword. We are going to allow selecting between formats in future releases
-    outputFormat: src/translations/{{languageCode}}/index.js  # where to write the results for a given language
+  - outputFormat: src/translations/{{languageCode}}/index.js  # where to write the results for a given language
     format: |
     export default {
     {{#each translations}}
