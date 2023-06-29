@@ -23,6 +23,11 @@ export type FormatConfig = {
     name?: string,
     outputPath: string,
     format: string,
+    useWhen?: FormatCondition,
+}
+
+export type FormatCondition = {
+    tagsInclude?: string[],
 }
 
 export type ValidationResult = {
@@ -125,13 +130,6 @@ export function validateConfig(obj: any): ValidationResult {
 }
 
 function validateFormatConfig(obj: any): ValidationResult {
-    if (!obj.name) {
-        return {
-            valid: false,
-            errors: ['name is required'],
-        }
-    }
-
     if (!obj.outputPath) {
         return {
             valid: false,

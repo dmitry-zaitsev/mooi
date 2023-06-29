@@ -5,9 +5,7 @@ import { Formatter, FormatterContext, Translation } from "../output";
 import { TranslationStoreFactory, TranslationsStore } from "../store/translations";
 import { TranlsatorEngine } from "./engine";
 
-export type TranslatorContext = {
-    includedTags?: string[];
-} & FormatterContext;
+export type TranslatorContext = {} & FormatterContext;
 
 export class Translator {
 

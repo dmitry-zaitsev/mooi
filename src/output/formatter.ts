@@ -4,6 +4,7 @@ export type FormatterContext = {
     rootDir: string;
     inputDir: string;
     formatName?: string;
+    includedTags?: string[];
 }
 
 export interface Formatter {

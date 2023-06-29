@@ -23,7 +23,7 @@ export class YamlBasedFormatter implements Formatter {
                 throw new Error(`Format with name ${context.formatName} not found`);
             }
         } else {
-            format = config.formats.find(format => !format.name || format.name === 'default');
+            format = this.inferFormat(context, config.formats);
         }
 
         if (!format) {
@@ -56,8 +56,30 @@ export class YamlBasedFormatter implements Formatter {
         }
     }
 
+    private inferFormat(context: FormatterContext, formats: FormatConfig[]): FormatConfig | undefined {
+        for (const format of formats) {
+            if (format.useWhen?.tagsInclude) {
+                const tags = context.includedTags ?? [];
+
+                if (format.useWhen.tagsInclude.every(tag => tags.includes(tag))) {
+                    return format;
+                }
+            }
+        }
+
+        return formats.find(format => !format.name || format.name === 'default');
+    }
+
     private verifyNoDuplicateDefaultFormats(formats: FormatConfig[]) {
-        if (formats.filter(format => !format.name || format.name === 'default').length > 1) {
+        const defaultFormats = formats.filter(format => {
+            if (format.useWhen) {
+                return false;
+            }
+
+            return !format.name || format.name === 'default';
+        });
+
+        if (defaultFormats.length > 1) {
             throw new Error(`Only one format can be named default`);
         }
     }
