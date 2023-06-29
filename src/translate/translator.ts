@@ -2,7 +2,7 @@ import { HashFunction } from "../crypto";
 import { App } from "../di";
 import { ProductCopy } from "../input";
 import { Formatter, FormatterContext, Translation } from "../output";
-import { TranslationStoreFactory } from "../store/translations";
+import { TranslationStoreFactory, TranslationsStore } from "../store/translations";
 import { TranlsatorEngine } from "./engine";
 
 export type TranslatorContext = {} & FormatterContext;
@@ -33,8 +33,8 @@ export class Translator {
     ): Promise<void> {
         for (const language of languages) {
             App.printer.info(`Translating to ${language}:`);
-            await this.translateLanguage(language, entries);
-            await this.applyFormat(context, language);
+            await this.translateLanguage(context, language, entries);
+            await this.applyFormat(context, entries, language);
         }
 
         await this.passThroughOriginalLanguage(context, entries);
@@ -52,31 +52,24 @@ export class Translator {
             store.put(entry.key, entry.value, this.hashFunction([entry.value, entry.description || null]));
         });
 
-        await this.applyFormat(context, languageCode);
+        await this.applyFormat(context, entries, languageCode);
     }
 
     private async translateLanguage(
+        context: TranslatorContext,
         language: string,
         entries: ProductCopy[]
     ): Promise<void> {
         const store = this.storeFactory(language);
         const batchSize = this.engine.maxBatchSize();
-
         const presentKeys = new Set(entries.map(entry => entry.key));
-        const keyToHash: {[key: string]: string} = {}
-        const hashToValue: {[hash: string]: string} = {}
-        for (const entry of entries) {
-            const hash = this.hashFunction([entry.value, entry.description || null]);
 
-            keyToHash[entry.key] = hash;
+        const filteredEntries = entries
+            .filter(entry => !context.includedTags || entry.tags?.some(tag => context.includedTags?.includes(tag)));
 
-            const existingValue = store.getByHash(hash)?.value;
-            if (existingValue) {
-                hashToValue[hash] = existingValue;
-            }
-        }
+        const { keyToHash, hashToValue } = this.aggregateEntries(filteredEntries, store);
 
-        const entriesWithExistingTranslation = entries
+        const entriesWithExistingTranslation = filteredEntries
             .filter(entry => {
                 const hash = keyToHash[entry.key];
 
@@ -96,7 +89,7 @@ export class Translator {
         });
         const keysWithExistingTranslation = new Set(entriesWithExistingTranslation.map(entry => entry.key));
 
-        const entriesForTranslation = entries
+        const entriesForTranslation = filteredEntries
             .filter(entry => {
                 if (keysWithExistingTranslation.has(entry.key)) {
                     return false;
@@ -148,17 +141,67 @@ export class Translator {
         }
     }
 
-    private async applyFormat(context: TranslatorContext, language: string): Promise<void> {
+    private aggregateEntries(entries: ProductCopy[], store: TranslationsStore): {
+        keyToHash: {[key: string]: string},
+        hashToValue: {[hash: string]: string},
+    } {
+        const keyToHash: {[key: string]: string} = {}
+        const hashToValue: {[hash: string]: string} = {}
+        for (const entry of entries) {
+            const hash = this.hashFunction([entry.value, entry.description || null]);
+
+            keyToHash[entry.key] = hash;
+
+            const existingValue = store.getByHash(hash)?.value;
+            if (existingValue) {
+                hashToValue[hash] = existingValue;
+            }
+        }
+
+        return {
+            keyToHash,
+            hashToValue,
+        };
+    }
+
+    private async applyFormat(
+        context: TranslatorContext, 
+        allEntries: ProductCopy[], 
+        language: string
+    ): Promise<void> {
         const store = this.storeFactory(language);
         const entries = store.entries();
 
-        const translations: Translation[] = entries.map(entry => {
-            return {
-                key: entry.key,
-                value: entry.value,
-                languageCode: language,
-            };
-        });
+        const entriesByKeys: {[key: string]: ProductCopy} = {};
+        for (const entry of allEntries) {
+            entriesByKeys[entry.key] = entry;
+        }
+
+        const translations: Translation[] = entries
+            .filter(entry => {
+                const originalDefinition = entriesByKeys[entry.key];
+                
+                if (!originalDefinition) {
+                    return false;
+                }
+
+                if (!context.includedTags) {
+                    return true;
+                }
+
+                if (originalDefinition.tags?.some(tag => context.includedTags?.includes(tag))) {
+                    return true;
+                }
+
+                return false;
+            })
+            .map(entry => {
+                return {
+                    key: entry.key,
+                    value: entry.value,
+                    languageCode: language,
+                };
+            });
 
         await this.formatter.write(context, translations);
     }

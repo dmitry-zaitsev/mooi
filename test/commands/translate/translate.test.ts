@@ -257,7 +257,7 @@ describe('mooi translate', () => {
                     {
                         key: 'wrong_tag',
                         value: 'String with a wrong tag',
-                        hash: 'hash(String with many tags)',
+                        hash: 'hash(String with a wrong tag)',
                     }
                 ]
             )
