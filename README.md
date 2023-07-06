@@ -13,49 +13,15 @@
 At a high level:
 
 - Define your product copies in a `yaml` file
-- Attach a description to each of your copies (just as you would do with a real translator)
+- Attach a description to each of your copies (just as you would do with a real translator).
 - Configure in what format you would like your output to be.
 - Run `mooi-cli` and get the result.
 - Commit the changes.
 
-## Installation
+## Getting Started
 
-Install it via npm:
+Follow our [official documentation](https://docs.mooi.cloud/) to learn how to get started
 
-```
-npm i -g mooi-cli
-```
+https://docs.mooi.cloud/
 
-## Use it
 
-Define a `mooi` folder in the root of your repository. Within that folder, put the **original** untranslated string copies (currently English is assumed) and specify what languages you want to generate. Here is an example:
-
-```yaml
-# Assuming that this file is mooi/translations.yaml
-
-languages: ['de', 'nl']
-entries:
-    - key: myCodeFriendlyKey                                            # a key that you will later use to look up this value
-      value: Hello World                                                # what you actually want to translate
-      description: This value is shown as a title of the home screen    # (optional, but recommended) Let mooi know in what context this value is used to get a better quality of translation
-```
-
-Then run 
-
-```
-npx mooi-cli translate --openAiKey {YOUR OPEN AI API KEY}
-```
-
-## Format the output
-By default, results are generated in `mooi/translations` folder. If you want to provide an additional output, you can do so via `mooi/config.yaml` file using Handlebar.js syntax
-
-```yaml
-formats:
-  - outputFormat: src/translations/{{languageCode}}/index.js  # where to write the results for a given language
-    format: |
-    export default {
-    {{#each translations}}
-      {{this.key}}: '{{this.value}}',
-    {{/each}}
-    }
-```
