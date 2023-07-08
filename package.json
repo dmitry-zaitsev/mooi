@@ -33,7 +33,7 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@oclif/test": "^2.3.25",
+    "@oclif/test": "^2.3.26",
     "@types/chai": "^4",
     "@types/fs-extra": "^11.0.1",
     "@types/mocha": "^9.0.0",
