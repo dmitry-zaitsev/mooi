@@ -852,7 +852,7 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^2", "@oclif/core@^2.8.11", "@oclif/core@^2.8.2", "@oclif/core@^2.8.4", "@oclif/core@^2.8.7":
+"@oclif/core@^2", "@oclif/core@^2.8.11", "@oclif/core@^2.8.2", "@oclif/core@^2.8.4":
   version "2.8.11"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.8.11.tgz#fbdf8b5b74a8b2012f2fcd5a30a515d327b54482"
   integrity sha512-9wYW6KRSWfB/D+tqeyl/jxmEz/xPXkFJGVWfKaptqHz6FPWNJREjAM945MuJL2Y8NRhMe+ScRlZ3WpdToX5aVQ==
@@ -944,13 +944,13 @@
   resolved "https://registry.npmjs.org/@oclif/screen/-/screen-3.0.4.tgz"
   integrity sha512-IMsTN1dXEXaOSre27j/ywGbBjrzx0FNd1XmuhCWCB9NTPrhWI1Ifbz+YLSEcstfQfocYsrbrIessxXb2oon4lA==
 
-"@oclif/test@^2.3.25":
-  version "2.3.25"
-  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-2.3.25.tgz#661e60c45eb7a926a56911044fa63760b2a53037"
-  integrity sha512-khOAiJc5/XEWkK0Lnueu+XB9uMaO2sDhDXwIZ80Ik0oUhsqujQixQbfOTDM8J9uc/uOuUPA9u5jmXOOSMxV7tg==
+"@oclif/test@^2.3.28":
+  version "2.3.28"
+  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-2.3.28.tgz#e5169994e31977368d204fb9546930b27afc81e4"
+  integrity sha512-Eee3efwfHHdgZIwOUGFEe8p4d8YEWFYKHoAezxdXzXVOtV4L9r7Oq6KH8dXGBy8yjYDleydwn0PqoZGhFeLxYQ==
   dependencies:
-    "@oclif/core" "^2.8.7"
-    fancy-test "^2.0.27"
+    "@oclif/core" "^2.8.11"
+    fancy-test "^2.0.28"
 
 "@octokit/auth-token@^2.4.4":
   version "2.5.0"
@@ -2912,10 +2912,10 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
-fancy-test@^2.0.27:
-  version "2.0.27"
-  resolved "https://registry.yarnpkg.com/fancy-test/-/fancy-test-2.0.27.tgz#81e6952052bdf48f0e53676fad2f6b534abf324f"
-  integrity sha512-NUhkIpeHc4ebvkGLhQmlwpd9hd/ytOXTEmX2dFJ0e5VL61Ds7/RUHUmdSRY27VWil+uAuWSU8q6mUymrkxHC8Q==
+fancy-test@^2.0.28:
+  version "2.0.29"
+  resolved "https://registry.yarnpkg.com/fancy-test/-/fancy-test-2.0.29.tgz#4f7d48a04fc7dc85b0e4321c8a655320c1ca9c53"
+  integrity sha512-jyr991jVTf+JkoXVJtvN5kk9IuWhHjZrZTBgLwqtyupgvKbWCw1rmiiPX3BG922E2RcoRg1wY1rIxnVoRIRKQg==
   dependencies:
     "@types/chai" "*"
     "@types/lodash" "*"
