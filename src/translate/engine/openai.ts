@@ -4,19 +4,22 @@ import { TranlsatorEngine } from "./engine";
 import { logger } from "../../util/logging";
 const dJSON = require('dirty-json');
 
-const MODEL = 'gpt-4'
+const DEFAULT_MODEL = 'gpt-4'
 
 interface OpenaiEngineConfig {
     apiKey: string;
     baseUrl?: string;
     urlParams?: Record<string, string>;
+    model?: string;
 }
 
 export class OpenaiTranslatorEngine implements TranlsatorEngine {
 
     private openAi: OpenAIApi
+    private model: string
 
     constructor(config: OpenaiEngineConfig) {
+        this.model = config.model || DEFAULT_MODEL;
         this.openAi = new OpenAIApi(new Configuration({
             apiKey: config.apiKey,
             basePath: config.baseUrl,
@@ -34,7 +37,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
     public async translate(input: ProductCopy[], languageCode: string): Promise<string[]> {
         const completionResponse = await this.openAi.createChatCompletion(
             {
-                model: MODEL,
+                model: this.model,
                 messages: [
                     {
                         role: 'user',
