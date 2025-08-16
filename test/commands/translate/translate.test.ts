@@ -4,6 +4,8 @@ import { FakeTranslatorEngine } from '../../fake/engine';
 import { clearTranslationStores, fakeTranslationStore, fakeTranslationStoreFactory, storedLanguages } from '../../fake/translations';
 import { FakeFormatter } from '../../fake/formatter';
 import { fakeHashFunction } from '../../fake/hash';
+import * as fs from 'fs';
+import * as glob from 'glob';
 
 
 let fakeTranslatorEngine: FakeTranslatorEngine;
@@ -21,9 +23,30 @@ function initializeDependencies(): void {
     });
 }
 
+function cleanupGeneratedFiles(): void {
+    // Clean up files generated during file translation tests
+    const patterns = [
+        'test/assets/cases/withFiles/mooi/test_*.md',
+        'test/assets/cases/withGlobPattern/mooi/docs/*_*.txt'
+    ];
+    
+    patterns.forEach(pattern => {
+        const files = glob.sync(pattern);
+        files.forEach(file => {
+            if (fs.existsSync(file)) {
+                fs.unlinkSync(file);
+            }
+        });
+    });
+}
+
 describe('mooi translate', () => {
     beforeEach(() => {
         clearTranslationStores();
+    });
+
+    afterEach(() => {
+        cleanupGeneratedFiles();
     });
 
     test
@@ -228,6 +251,60 @@ describe('mooi translate', () => {
 
             // 2 DE + 2 NL + 2 EN
             expect(fakeFormatter.writtenTranslations().length).eq(6);
+        })
+
+    test
+        .do(() => initializeDependencies())
+        .command(['translate', 'test/assets/cases/withFiles/mooi', '--openAiKey', 'fakeOpenAiKey'])
+        .it('translate files along with regular entries', ctx => {
+            expect(storedLanguages()).to.have.members(['en', 'de', 'nl', 'file_de', 'file_nl']);
+
+            // Check regular entries
+            const deEntries = fakeTranslationStore('de').entries();
+            expect(deEntries).deep.eq(
+                [
+                    {
+                        key: 'my_string',
+                        value: 'de(My string)',
+                        hash: 'hash(My string,A test string)',
+                    },
+                    {
+                        key: 'my_button',
+                        value: 'de(Click me)',
+                        hash: 'hash(Click me,Button text)',
+                    }
+                ]
+            )
+
+            // Check file translations
+            const fileDeEntries = fakeTranslationStore('file_de').entries();
+            expect(fileDeEntries.length).eq(1);
+            expect(fileDeEntries[0].key).includes('test.md');
+            expect(fileDeEntries[0].value).includes('de(# Test Document');
+
+            const fileNlEntries = fakeTranslationStore('file_nl').entries();
+            expect(fileNlEntries.length).eq(1);
+            expect(fileNlEntries[0].key).includes('test.md');
+            expect(fileNlEntries[0].value).includes('nl(# Test Document');
+        })
+
+    test
+        .do(() => initializeDependencies())
+        .command(['translate', 'test/assets/cases/withGlobPattern/mooi', '--openAiKey', 'fakeOpenAiKey'])
+        .it('translate multiple files using glob pattern', ctx => {
+            expect(storedLanguages()).to.have.members(['en', 'de', 'nl', 'file_de', 'file_nl']);
+
+            // Check file translations for multiple files
+            const fileDeEntries = fakeTranslationStore('file_de').entries();
+            expect(fileDeEntries.length).eq(2);
+            
+            const filePaths = fileDeEntries.map(e => e.key);
+            expect(filePaths.some(p => p.includes('doc1.txt'))).to.be.true;
+            expect(filePaths.some(p => p.includes('doc2.txt'))).to.be.true;
+
+            // Check translations were applied
+            expect(fileDeEntries[0].value).includes('de(');
+            expect(fileDeEntries[1].value).includes('de(');
         })
 
     test

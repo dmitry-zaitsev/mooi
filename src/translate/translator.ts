@@ -1,9 +1,10 @@
 import { HashFunction } from "../crypto";
 import { App } from "../di";
-import { ProductCopy } from "../input";
+import { ProductCopy, FileCopy } from "../input";
 import { Formatter, FormatterContext, Translation } from "../output";
 import { TranslationStoreFactory, TranslationsStore } from "../store/translations";
 import { TranlsatorEngine } from "./engine";
+import { FileTranslator } from "./fileTranslator";
 
 export type TranslatorContext = {} & FormatterContext;
 
@@ -15,6 +16,7 @@ export class Translator {
     private hashFunction: HashFunction;
     private context?: string;
     private useContextForChecksum: boolean;
+    private fileTranslator: FileTranslator;
 
     constructor(
         engine: TranlsatorEngine,
@@ -30,20 +32,37 @@ export class Translator {
         this.hashFunction = hashFunction;
         this.context = context;
         this.useContextForChecksum = useContextForChecksum || false;
+        this.fileTranslator = new FileTranslator(
+            engine,
+            storeFactory,
+            hashFunction,
+            context
+        );
     }
 
     public async translate(
         context: TranslatorContext,
         languages: string[],
-        entries: ProductCopy[]
+        entries: (ProductCopy | FileCopy)[]
     ): Promise<void> {
-        for (const language of languages) {
-            App.printer.info(`Translating to ${language}:`);
-            await this.translateLanguage(context, language, entries);
-            await this.applyFormat(context, entries, language);
+        // Separate file entries from product copy entries
+        const productEntries = entries.filter(e => 'key' in e) as ProductCopy[];
+        const fileEntries = entries.filter(e => 'filePath' in e) as FileCopy[];
+
+        // Translate product copies
+        if (productEntries.length > 0) {
+            for (const language of languages) {
+                App.printer.info(`Translating to ${language}:`);
+                await this.translateLanguage(context, language, productEntries);
+                await this.applyFormat(context, productEntries, language);
+            }
+            await this.passThroughOriginalLanguage(context, productEntries);
         }
 
-        await this.passThroughOriginalLanguage(context, entries);
+        // Translate files
+        if (fileEntries.length > 0) {
+            await this.fileTranslator.translateFiles(fileEntries, languages);
+        }
     }
 
     private async passThroughOriginalLanguage(

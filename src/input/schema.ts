@@ -1,11 +1,17 @@
 export type InputSchema = {
     languages: string[],
-    entries: ProductCopy[],
+    entries: (ProductCopy | FileCopy)[],
 }
 
 export type ProductCopy = {
     key: string,
     value: string,
+    description?: string,
+    tags?: string[],
+}
+
+export type FileCopy = {
+    filePath: string,
     description?: string,
     tags?: string[],
 }
@@ -62,15 +68,29 @@ export function validateInputSchema(obj: any): ValidationResult {
     }
 
     const entries = obj.entries as any[];
+    const errors: string[] = [];
+    
     entries.forEach((entry, index) => {
-        const result = validateProductCopy(entry);
-        if (!result.valid) {
-            return {
-                valid: false,
-                errors: result.errors.map(e => `entries[${index}]: ${e}`),
+        // Check if it's a file entry or product copy
+        if (entry.filePath) {
+            const result = validateFileCopy(entry);
+            if (!result.valid) {
+                errors.push(...result.errors.map(e => `entries[${index}]: ${e}`));
+            }
+        } else {
+            const result = validateProductCopy(entry);
+            if (!result.valid) {
+                errors.push(...result.errors.map(e => `entries[${index}]: ${e}`));
             }
         }
     });
+    
+    if (errors.length > 0) {
+        return {
+            valid: false,
+            errors: errors,
+        }
+    }
 
     return {
         valid: true,
@@ -79,24 +99,52 @@ export function validateInputSchema(obj: any): ValidationResult {
 }
 
 function validateProductCopy(obj: any): ValidationResult {
+    const errors: string[] = [];
+    
     if (!obj.key) {
-        return {
-            valid: false,
-            errors: ['key is required'],
-        }
+        errors.push('key is required');
     }
 
     if (!obj.value) {
+        errors.push('value is required');
+    }
+
+    // Description is optional as per the type definition
+    // No validation needed for optional field
+
+    if (errors.length > 0) {
         return {
             valid: false,
-            errors: ['value is required'],
+            errors: errors,
         }
     }
 
-    if (!obj.description) {
+    return {
+        valid: true,
+        errors: [],
+    }
+}
+
+function validateFileCopy(obj: any): ValidationResult {
+    if (!obj.filePath) {
         return {
             valid: false,
-            errors: ['description is required'],
+            errors: ['filePath is required'],
+        }
+    }
+
+    // Check if the glob pattern matches at least one file
+    const glob = require('glob');
+    const path = require('path');
+    
+    // Resolve the path relative to the current working directory
+    const resolvedPath = path.resolve(process.cwd(), obj.filePath);
+    const files = glob.sync(resolvedPath);
+    
+    if (files.length === 0) {
+        return {
+            valid: false,
+            errors: [`filePath '${obj.filePath}' does not match any files`],
         }
     }
 

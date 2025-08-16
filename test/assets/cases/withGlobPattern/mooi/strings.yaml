@@ -1,0 +1,7 @@
+languages: ['de', 'nl']
+entries:
+  - key: my_key
+    value: My value
+    description: A test value
+  - filePath: test/assets/cases/withGlobPattern/mooi/docs/*.txt
+    description: Multiple text files to translate
