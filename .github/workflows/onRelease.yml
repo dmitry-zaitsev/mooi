@@ -23,8 +23,19 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: yarn
-      - uses: flood-io/is-published-on-npm@8478347e2650eb228d303975415458183d0a37e4
+      - name: Check if version is published
         id: is-published
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null; then
+            echo "Package ${PACKAGE_NAME}@${PACKAGE_VERSION} is already published"
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "Package ${PACKAGE_NAME}@${PACKAGE_VERSION} is not published"
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: echo "published said ${{ steps.is-published.outputs.published }}"
