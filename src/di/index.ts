@@ -15,6 +15,8 @@ export type AppModule = {
     translationStoreFactory: TranslationStoreFactory;
     hashFunction: HashFunction;
     inputDirectory: string;
+    context?: string;
+    useContextForChecksum?: boolean;
 }
 
 /**
@@ -41,6 +43,8 @@ export class App {
             module.outputFormatter,
             module.translationStoreFactory,
             module.hashFunction,
+            module.context,
+            module.useContextForChecksum,
         );
     }
 
@@ -53,11 +57,14 @@ export const inittializeDependencies = (params: DiParams) => {
             baseUrl: params.config?.openai?.url,
             urlParams: params.config?.openai?.urlParams,
             model: params.config?.openai?.model,
+            context: params.config?.context,
         }),
         hashFunction: sha1HashFunction,
         translationStoreFactory: createDiskTranslationStoreFactory(params.inputDirectory),
         outputFormatter: new YamlBasedFormatter(),
         inputDirectory: params.inputDirectory,
+        context: params.config?.context,
+        useContextForChecksum: params.config?.useContextForChecksum,
         ...overrides,
     });
 }

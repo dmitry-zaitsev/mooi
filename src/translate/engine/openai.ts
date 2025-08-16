@@ -11,15 +11,18 @@ interface OpenaiEngineConfig {
     baseUrl?: string;
     urlParams?: Record<string, string>;
     model?: string;
+    context?: string;
 }
 
 export class OpenaiTranslatorEngine implements TranlsatorEngine {
 
     private openAi: OpenAIApi
     private model: string
+    private context?: string
 
     constructor(config: OpenaiEngineConfig) {
         this.model = config.model || DEFAULT_MODEL;
+        this.context = config.context;
         this.openAi = new OpenAIApi(new Configuration({
             apiKey: config.apiKey,
             basePath: config.baseUrl,
@@ -41,7 +44,7 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
                 messages: [
                     {
                         role: 'user',
-                        content: PROMPTS.init('en', languageCode)
+                        content: PROMPTS.init('en', languageCode, this.context)
                     },
                     {
                         role: 'assistant',
@@ -109,7 +112,14 @@ export class OpenaiTranslatorEngine implements TranlsatorEngine {
 }
 
 const PROMPTS = {
-    init: (sourceLanguage: string, targetLanguage: string) => `
+    init: (sourceLanguage: string, targetLanguage: string, context?: string) => {
+        let prompt = '';
+        
+        if (context) {
+            prompt += `Context about the application being translated:\n${context}\n\n`;
+        }
+        
+        prompt += `
         I want you to translate some strings from language code {{SOURCE_LANGUAGE}} to language code {{TARGET_LANGUAGE}}.
         Respond with JSON in the following schema. 
 
@@ -123,7 +133,10 @@ const PROMPTS = {
         Do include the reply.
     `
         .replace('{{SOURCE_LANGUAGE}}', sourceLanguage)
-        .replace('{{TARGET_LANGUAGE}}', targetLanguage),
+        .replace('{{TARGET_LANGUAGE}}', targetLanguage);
+        
+        return prompt;
+    },
     initResponse: (sourceLanguage: string, targetLanguage: string) => `
         I will translate strings from language code {{SOURCE_LANGUAGE}} to language code {{TARGET_LANGUAGE}}. I will provide output in the following format:
 

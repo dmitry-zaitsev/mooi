@@ -13,17 +13,23 @@ export class Translator {
     private formatter: Formatter;
     private storeFactory: TranslationStoreFactory;
     private hashFunction: HashFunction;
+    private context?: string;
+    private useContextForChecksum: boolean;
 
     constructor(
         engine: TranlsatorEngine,
         formatter: Formatter,
         storeFactory: TranslationStoreFactory,
         hashFunction: HashFunction,
+        context?: string,
+        useContextForChecksum?: boolean,
     ) {
         this.engine = engine;
         this.formatter = formatter;
         this.storeFactory = storeFactory;
         this.hashFunction = hashFunction;
+        this.context = context;
+        this.useContextForChecksum = useContextForChecksum || false;
     }
 
     public async translate(
@@ -49,7 +55,7 @@ export class Translator {
         store.clear();
 
         entries.forEach(entry => {
-            store.put(entry.key, entry.value, this.hashFunction([entry.value, entry.description || null]));
+            store.put(entry.key, entry.value, this.computeHash(entry));
         });
 
         await this.applyFormat(context, entries, languageCode);
@@ -148,7 +154,7 @@ export class Translator {
         const keyToHash: {[key: string]: string} = {}
         const hashToValue: {[hash: string]: string} = {}
         for (const entry of entries) {
-            const hash = this.hashFunction([entry.value, entry.description || null]);
+            const hash = this.computeHash(entry);
 
             keyToHash[entry.key] = hash;
 
@@ -162,6 +168,14 @@ export class Translator {
             keyToHash,
             hashToValue,
         };
+    }
+
+    private computeHash(entry: ProductCopy): string {
+        const hashInputs: any[] = [entry.value, entry.description || null];
+        if (this.useContextForChecksum && this.context) {
+            hashInputs.push(this.context);
+        }
+        return this.hashFunction(hashInputs);
     }
 
     private async applyFormat(

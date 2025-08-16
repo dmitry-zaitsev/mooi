@@ -11,6 +11,8 @@ export type ProductCopy = {
 }
 
 export type Config = {
+    context?: string,
+    useContextForChecksum?: boolean,
     formats?: FormatConfig[],
     openai?: OpenaiEngineConfig,
 }
