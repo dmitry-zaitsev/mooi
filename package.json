@@ -29,25 +29,25 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@oclif/test": "^2.3.25",
+    "@oclif/test": "^3.0.0",
     "@types/chai": "^4",
     "@types/fs-extra": "^11.0.1",
     "@types/js-yaml": "^4.0.5",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.18.38",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/parser": "^5.60.0",
     "chai": "^4",
     "eslint": "^8.41.0",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
     "jest": "^29.5.0",
-    "mocha": "^9",
+    "mocha": "^10",
     "oclif": "^3",
     "prettier": "^2.8.8",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.0"
   },
   "oclif": {
     "bin": "mooi",
@@ -67,7 +67,7 @@
     "version": "oclif readme && git add README.md"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "bugs": "https://github.com/dmitry-zaitsev/mooi/issues",
   "keywords": [
