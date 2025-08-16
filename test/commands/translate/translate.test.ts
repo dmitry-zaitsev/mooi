@@ -27,17 +27,28 @@ function cleanupGeneratedFiles(): void {
     // Clean up files generated during file translation tests
     const patterns = [
         'test/assets/cases/withFiles/mooi/test_*.md',
-        'test/assets/cases/withGlobPattern/mooi/docs/*_*.txt'
+        'test/assets/cases/withGlobPattern/mooi/docs/*_*.txt',
+        'test/assets/cases/withCustomOutput/output/**/*'
     ];
     
     patterns.forEach(pattern => {
         const files = glob.sync(pattern);
         files.forEach(file => {
-            if (fs.existsSync(file)) {
+            if (fs.existsSync(file) && fs.statSync(file).isFile()) {
                 fs.unlinkSync(file);
             }
         });
     });
+    
+    // Clean up empty directories
+    try {
+        const customOutputDir = 'test/assets/cases/withCustomOutput/output';
+        if (fs.existsSync(customOutputDir)) {
+            fs.rmSync(customOutputDir, { recursive: true });
+        }
+    } catch {
+        // Ignore errors
+    }
 }
 
 describe('mooi translate', () => {
@@ -305,6 +316,22 @@ describe('mooi translate', () => {
             // Check translations were applied
             expect(fileDeEntries[0].value).includes('de(');
             expect(fileDeEntries[1].value).includes('de(');
+        })
+
+    test
+        .do(() => initializeDependencies())
+        .command(['translate', 'test/assets/cases/withCustomOutput/mooi', '--openAiKey', 'fakeOpenAiKey'])
+        .it('translate files with custom output paths', ctx => {
+            // Check that file translations were created with custom paths
+            const fileDeEntries = fakeTranslationStore('file_de').entries();
+            const fileNlEntries = fakeTranslationStore('file_nl').entries();
+            
+            expect(fileDeEntries.length).eq(1);
+            expect(fileNlEntries.length).eq(1);
+            
+            // The file should be translated
+            expect(fileDeEntries[0].key).includes('doc.txt');
+            expect(fileDeEntries[0].value).includes('de(This is a test document');
         })
 
     test

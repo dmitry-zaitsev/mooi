@@ -12,6 +12,7 @@ export type ProductCopy = {
 
 export type FileCopy = {
     filePath: string,
+    outputPath?: string,  // Optional template like: "translations/{{languageCode}}/{{fileName}}{{extension}}"
     description?: string,
     tags?: string[],
 }

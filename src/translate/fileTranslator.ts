@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
+import * as Handlebars from 'handlebars';
 import { FileCopy } from '../input';
 import { TranlsatorEngine } from './engine';
 import { HashFunction } from '../crypto';
 import { TranslationStoreFactory, TranslationsStore } from '../store/translations';
 import { App } from '../di';
+const fse = require('fs-extra');
 
 export interface FileTranslation {
     originalPath: string;
@@ -48,11 +50,14 @@ export class FileTranslator {
                     const translation = await this.translateFile(
                         filePath,
                         language,
-                        entry.description
+                        entry.description,
+                        entry.outputPath
                     );
                     
                     if (translation) {
                         results.push(translation);
+                        // Ensure directory exists for the output path
+                        fse.ensureDirSync(path.dirname(translation.translatedPath));
                         // Write the translated file
                         fs.writeFileSync(translation.translatedPath, translation.content);
                         App.printer.info(`  Created: ${translation.translatedPath}`);
@@ -72,7 +77,8 @@ export class FileTranslator {
     private async translateFile(
         filePath: string,
         language: string,
-        description?: string
+        description?: string,
+        outputPathTemplate?: string
     ): Promise<FileTranslation | null> {
         const store = this.storeFactory(`file_${language}`);
         
@@ -88,7 +94,7 @@ export class FileTranslator {
             App.printer.info(`  Using cached translation for ${filePath}`);
             return {
                 originalPath: filePath,
-                translatedPath: this.generateTranslatedPath(filePath, language),
+                translatedPath: this.generateTranslatedPath(filePath, language, outputPathTemplate),
                 language,
                 content: existing.value
             };
@@ -112,7 +118,7 @@ export class FileTranslator {
             
             return {
                 originalPath: filePath,
-                translatedPath: this.generateTranslatedPath(filePath, language),
+                translatedPath: this.generateTranslatedPath(filePath, language, outputPathTemplate),
                 language,
                 content: translatedContent
             };
@@ -121,11 +127,31 @@ export class FileTranslator {
         return null;
     }
 
-    private generateTranslatedPath(originalPath: string, language: string): string {
+    private generateTranslatedPath(originalPath: string, language: string, outputPathTemplate?: string): string {
+        if (!outputPathTemplate) {
+            // Default behavior: place in same directory with language suffix
+            const dir = path.dirname(originalPath);
+            const ext = path.extname(originalPath);
+            const nameWithoutExt = path.basename(originalPath, ext);
+            return path.join(dir, `${nameWithoutExt}_${language}${ext}`);
+        }
+
+        // Use Handlebars template for custom output path
+        const template = Handlebars.compile(outputPathTemplate);
+        
+        // Prepare template variables
         const dir = path.dirname(originalPath);
         const ext = path.extname(originalPath);
         const nameWithoutExt = path.basename(originalPath, ext);
         
-        return path.join(dir, `${nameWithoutExt}_${language}${ext}`);
+        const templateData = {
+            languageCode: language,
+            fileName: nameWithoutExt,
+            extension: ext,
+            directory: dir,
+            originalPath: originalPath
+        };
+        
+        return template(templateData);
     }
 }
