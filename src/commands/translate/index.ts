@@ -5,6 +5,7 @@ import { TranslatorContext } from "../../translate";
 import { logger } from "../../util/logging";
 import { inferDiParams } from "../../di/inferParams";
 import { parseList } from "../../util/args";
+import { VersionChecker } from "../../util/versionCheck";
 
 export default class Translate extends Command {
 
@@ -16,12 +17,19 @@ export default class Translate extends Command {
         openAiKey: Flags.string({ char: 'k', description: 'OpenAI API key', required: false }),
         includeTags: Flags.string({ char: 't', description: 'Comma-separated list of tags to include', required: false }),
         format: Flags.string({ char: 'f', description: 'Format name', required: false }),
+        'no-version-check': Flags.boolean({ description: 'Skip checking for new versions', required: false }),
     }
 
     async run(): Promise<any> {
         logger.info('Running translate command');
 
         const {args, flags} = await this.parse(Translate);
+
+        // Check for updates unless disabled
+        if (!flags['no-version-check']) {
+            const versionChecker = new VersionChecker();
+            await versionChecker.checkForUpdates();
+        }
 
         const diParamsResult = await inferDiParams({
             commandLineArgs: {
