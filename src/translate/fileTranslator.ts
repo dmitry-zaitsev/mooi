@@ -50,8 +50,7 @@ export class FileTranslator {
                     const translation = await this.translateFile(
                         filePath,
                         language,
-                        entry.description,
-                        entry.outputPath
+                        entry
                     );
                     
                     if (translation) {
@@ -77,8 +76,7 @@ export class FileTranslator {
     private async translateFile(
         filePath: string,
         language: string,
-        description?: string,
-        outputPathTemplate?: string
+        entry: FileCopy
     ): Promise<FileTranslation | null> {
         const store = this.storeFactory(`file_${language}`);
         
@@ -86,7 +84,7 @@ export class FileTranslator {
         const content = fs.readFileSync(filePath, 'utf-8');
         
         // Generate hash for the file content
-        const hash = this.hashFunction([content, description || null]);
+        const hash = this.hashFunction([content, entry.description || null]);
         
         // Check if already translated
         const existing = store.getByHash(hash);
@@ -94,17 +92,29 @@ export class FileTranslator {
             App.printer.info(`  Using cached translation for ${filePath}`);
             return {
                 originalPath: filePath,
-                translatedPath: this.generateTranslatedPath(filePath, language, outputPathTemplate),
+                translatedPath: this.generateTranslatedPath(filePath, language, entry.outputPath),
                 language,
                 content: existing.value
             };
+        }
+
+        // Check if we should use previous version as context (default: true)
+        const usePreviousVersion = entry.usePreviousVersionAsContext !== false;
+        let enrichedDescription = entry.description || `Content of file: ${path.basename(filePath)}`;
+        
+        if (usePreviousVersion) {
+            // Try to get previous translation from store
+            const previousTranslation = store.get(filePath);
+            if (previousTranslation) {
+                enrichedDescription += `\n\nPrevious ${language} translation for reference:\n${previousTranslation.value}\n\nPlease maintain consistency with the previous translation where appropriate, but feel free to improve it if needed.`;
+            }
         }
 
         // Prepare content for translation
         const fileInfo = {
             key: filePath,
             value: content,
-            description: description || `Content of file: ${path.basename(filePath)}`
+            description: enrichedDescription
         };
 
         // Translate using the engine
@@ -118,7 +128,7 @@ export class FileTranslator {
             
             return {
                 originalPath: filePath,
-                translatedPath: this.generateTranslatedPath(filePath, language, outputPathTemplate),
+                translatedPath: this.generateTranslatedPath(filePath, language, entry.outputPath),
                 language,
                 content: translatedContent
             };

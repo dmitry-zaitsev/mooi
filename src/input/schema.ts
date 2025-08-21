@@ -15,6 +15,7 @@ export type FileCopy = {
     outputPath?: string,  // Optional template like: "translations/{{languageCode}}/{{fileName}}{{extension}}"
     description?: string,
     tags?: string[],
+    usePreviousVersionAsContext?: boolean,  // When true, passes previous translation as context (default: true)
 }
 
 export type Config = {
