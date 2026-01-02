@@ -2,7 +2,7 @@
 
 # mooi
 
-*mooi* is a language translator that:
+*mooi* is an AI language translator that:
 
 - Is aware in what context the text is going to be used (thanks to GPT).
 - Supports nearly every imaginable framework (Spring, Android, iOS, React, etc.).
